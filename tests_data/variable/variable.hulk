@@ -1,0 +1,29 @@
+{
+    // Referencia a variable en expresión simple
+    let x = 42 in print(x);
+
+    // Referencia en operación binaria
+    let a = 3, b = 4 in print(a + b);
+
+    // Referencia en condición
+    let condition = true in if (condition) print("True") else print("False");
+
+    // Referencia dentro de un bloque
+    let msg = "Hello" in {
+        print(msg);
+        print(msg @ " World");
+    };
+
+    // Referencia a constante PI
+    print(PI);
+
+    // Uso de PI en una expresión aritmética
+    print(2 * PI);
+
+    // Referencia a constante E
+    print(E);
+
+    // Uso combinado de PI y E en funciones
+    print(sin(PI / 2));
+    print(exp(1));
+}

@@ -593,8 +593,8 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
 
     print_indent(pv->indent_level);
 
-    printf("BaseCall: %s::%s [%s]\n",
-        base_call->type_name, base_call->method_name, base_call->base.return_type ? base_call->base.return_type->name : "?");
+    printf("BaseCall [%s]\n",
+           base_call->base.return_type ? base_call->base.return_type->name : "?");
 
     if (list_count(base_call->args) > 0)
     {
@@ -610,7 +610,7 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
             ASTNode *arg = (ASTNode *)list_get(base_call->args, i);
             ast_accept(arg, visitor);
         }
-
+        
         pv->indent_level -= 2;
     }
 

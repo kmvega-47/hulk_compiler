@@ -1,0 +1,33 @@
+{
+    // Reasignación simple
+    let counter = 10 in {
+        counter;
+        counter := counter - 1;
+        counter;
+    };
+
+    // Reasignación como expresión (retorna el valor asignado)
+    let a = 5 in
+        let b = a := a * 2 in {
+            a;
+            b;
+        };
+
+    // Reasignación en estructura condicional
+    let flag = true in {
+        if (flag) {
+            flag := false;
+            1;
+        } else {
+            0;
+        };
+        flag;
+    };
+
+    // Múltiples reasignaciones
+    let x = 0 in {
+        x := 1;
+        x := x + 1;
+        x;
+    };
+}

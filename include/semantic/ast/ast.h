@@ -662,14 +662,12 @@ TypeInstanciationNode *ast_type_instanciation_create(const char *type_name, List
 /**
  * @brief Crea un nodo de llamada a base().
  *
- * @param method_name Nombre del método actual.
- * @param type_name   Nombre del tipo actual.
- * @param args        Lista de argumentos (toma ownership). No puede ser NULL.
- * @param line        Número de línea.
- * @param column      Número de columna.
+ * @param args   Lista de argumentos (toma ownership). No puede ser NULL.
+ * @param line   Número de línea.
+ * @param column Número de columna.
  * @return Puntero al nodo creado, o NULL si falla la asignación.
  */
-BaseCallNode *ast_base_call_create(const char *method_name, const char *type_name, List *args, int line, int column);
+BaseCallNode *ast_base_call_create(List *args, int line, int column);
 
 /**
  * @brief Crea un nodo de expresión is.

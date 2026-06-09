@@ -9,7 +9,7 @@ void test_print_base_call_no_args(void)
 
     printf("Caso: base() (linea 5, columna 9)\n");
     List *args = list_create(0, NULL, NULL, NULL, NULL);
-    BaseCallNode *node = ast_base_call_create("getX", "Point", args, 5, 9);
+    BaseCallNode *node = ast_base_call_create(args, 5, 9);
 
     PrintVisitor *pv = print_visitor_create();
     ast_accept((ASTNode *)node, (Visitor *)pv);
@@ -37,7 +37,7 @@ void test_print_base_call_with_args(void)
     ASTNode *arg2 = (ASTNode *)ast_binary_create(OP_ADD, (ASTNode *)a, (ASTNode *)b, 10, 16);
     list_append(args, arg2);
 
-    BaseCallNode *node = ast_base_call_create("calculate", "Child", args, 10, 5);
+    BaseCallNode *node = ast_base_call_create(args, 10, 5);
 
     PrintVisitor *pv = print_visitor_create();
     ast_accept((ASTNode *)node, (Visitor *)pv);

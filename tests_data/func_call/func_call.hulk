@@ -1,0 +1,25 @@
+// Definiciones auxiliares para probar llamadas a funciones de usuario
+function cube(x) => x ^ 3;
+function add(x, y) => x + y;
+
+// Expresión global con llamadas a built‑in y a funciones definidas
+{
+    // Built‑in: print y matemáticas
+    print(42);
+    print(sqrt(25));
+    print(sin(PI / 2));
+    print(cos(0));
+    print(exp(1));
+    print(log(2, 8));
+    print(rand());
+
+    // Llamadas a funciones propias
+    print(cube(3));
+    print(add(5, 7));
+
+    // Anidamiento de llamadas
+    print(sin(2 * PI) ^ 2 + cos(3 * PI / log(4, 64)));
+
+    // Llamada como parte de una expresión condicional
+    if (cube(2) == 8) print("Cubo correcto") else print("Error");
+}

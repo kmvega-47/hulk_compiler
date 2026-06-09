@@ -345,9 +345,9 @@ TypeInstanciationNode *ast_type_instanciation_create(const char *type_name, List
     return node;
 }
 
-BaseCallNode *ast_base_call_create(const char *method_name, const char *type_name, List *args, int line, int column)
+BaseCallNode *ast_base_call_create(List *args, int line, int column)
 {
-    if (!method_name || !type_name || !args)
+    if (!args)
         return NULL;
 
     BaseCallNode *node = (BaseCallNode *)malloc(sizeof(BaseCallNode));
@@ -356,21 +356,8 @@ BaseCallNode *ast_base_call_create(const char *method_name, const char *type_nam
 
     ast_base_init(&node->base, NODE_BASE_CALL, line, column);
 
-    node->method_name = strdup(method_name);
-    if (!node->method_name)
-    {
-        free(node);
-        return NULL;
-    }
-
-    node->type_name = strdup(type_name);
-    if (!node->type_name)
-    {
-        free(node->method_name);
-        free(node);
-        return NULL;
-    }
-
+    node->method_name = NULL;
+    node->type_name = NULL;
     node->args = args;
 
     return node;

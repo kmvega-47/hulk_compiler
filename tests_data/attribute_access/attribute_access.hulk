@@ -1,0 +1,30 @@
+// Definición de un tipo con atributos y métodos para acceder a ellos
+type Person {
+    name = "John";
+    age = 30;
+    getName() => self.name;
+    getAge() => self.age;
+    setName(n) => self.name := n;
+    setAge(a) => self.age := a;
+}
+
+// Expresión global con accesos a atributos
+{
+    let p = new Person() in {
+        // En HULK los atributos son privados, solo se accede mediante métodos.
+        print(p.getName());
+        print(p.getAge());
+
+        // Modificación mediante métodos setter
+        p.setName("Alice");
+        p.setAge(25);
+        print(p.getName());
+        print(p.getAge());
+
+        // Acceso a atributo desde una expresión más compleja
+        if (p.getAge() > 20)
+            print(p.getName() @ " is older than 20")
+        else
+            print(p.getName() @ " is 20 or younger");
+    };
+}

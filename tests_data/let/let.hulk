@@ -1,0 +1,26 @@
+{
+    // Let simple con número
+    let x = 42 in x;
+
+    // Let con múltiples variables (usando variable previa)
+    let a = 6, b = a * 7 in b;
+
+    // Let con anotación de tipo
+    let msg: String = "Hola" in msg;
+
+    // Let anidado (asociatividad a la derecha)
+    let outer = 1 in
+        let inner = outer + 1 in
+            inner;
+
+    // Sombreado (shadowing)
+    let num = 5 in
+        let num = num * 2 in
+            num;
+
+    // Let con inicializador complejo (bloque)
+    let result = {
+        let x = 10, y = 20 in
+            x + y;
+    } in result;
+}

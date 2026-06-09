@@ -1,0 +1,31 @@
+// Definición de un tipo de ejemplo
+type Calculator {
+    value = 0;
+    getValue() => self.value;
+    setValue(v) => self.value := v;
+    add(x, y) => x + y;
+    mult(x, y) => x * y;
+    operate(a, b) => self.add(a, b) + self.mult(a, b);
+}
+
+// Expresión global con llamadas a métodos
+{
+    let calc = new Calculator() in {
+        // Llamada a método sin argumentos
+        print(calc.getValue());
+
+        // Llamada a método con un argumento
+        calc.setValue(10);
+        print(calc.getValue());
+
+        // Llamada a método con varios argumentos
+        print(calc.add(3, 4));
+        print(calc.mult(5, 6));
+
+        // Llamada a método que llama a otros métodos
+        print(calc.operate(1, 2));
+
+        // Método encadenado como expresión
+        let sum = calc.add(7, 8) in print(sum);
+    };
+}

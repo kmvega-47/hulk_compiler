@@ -282,7 +282,6 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
         ASTNode *arg = (ASTNode *)list_get(base_call->args, i);
         ast_accept(arg, visitor);
     }
-    
     list_destroy(base_call->args);
 
     free(base_call->method_name);

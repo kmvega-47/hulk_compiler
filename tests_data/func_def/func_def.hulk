@@ -1,0 +1,35 @@
+// Definiciones de funciones (inline, full‑form, recursivas, con anotaciones)
+function tan(x) => sin(x) / cos(x);
+function cot(x) => 1 / tan(x);
+
+function factorial(n) =>
+    if (n == 0) 1
+    else n * factorial(n - 1);
+
+function gcd(a, b) 
+{
+    while (b != 0) 
+    {
+        let temp = a % b in 
+        {
+            a := b;
+            b := temp;
+        };
+    };
+    
+    a;
+}
+
+function operate(x, y) {
+    print(x + y);
+    print(x - y);
+    print(x * y);
+    print(x / y);
+}
+
+// Expresión global que usa algunas funciones para que el programa sea válido
+{
+    print(tan(PI / 4));
+    print(factorial(5));
+    print(gcd(48,20));
+}

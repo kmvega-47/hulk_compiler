@@ -8,10 +8,6 @@ TypeDescriptor *type_create(HulkType tag, const char *name, TypeDescriptor *pare
 
     type->tag = tag;
     type->name = name ? strdup(name) : NULL;
-
-    if (type->name)
-        str_toupper(type->name);
-
     type->parent = parent;
     return type;
 }

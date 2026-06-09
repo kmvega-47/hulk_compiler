@@ -376,6 +376,52 @@ BaseCallNode *ast_base_call_create(const char *method_name, const char *type_nam
     return node;
 }
 
+IsNode *ast_is_create(ASTNode *target, const char *type_name, int line, int column)
+{
+    if (!target || !type_name)
+        return NULL;
+
+    IsNode *node = (IsNode *)malloc(sizeof(IsNode));
+    if (!node)
+        return NULL;
+
+    ast_base_init(&node->base, NODE_IS, line, column);
+
+    node->target = target;
+
+    node->type_name = strdup(type_name);
+    if (!node->type_name)
+    {
+        free(node);
+        return NULL;
+    }
+
+    return node;
+}
+
+AsNode *ast_as_create(ASTNode *target, const char *type_name, int line, int column)
+{
+    if (!target || !type_name)
+        return NULL;
+
+    AsNode *node = (AsNode *)malloc(sizeof(AsNode));
+    if (!node)
+        return NULL;
+
+    ast_base_init(&node->base, NODE_AS, line, column);
+
+    node->target = target;
+
+    node->type_name = strdup(type_name);
+    if (!node->type_name)
+    {
+        free(node);
+        return NULL;
+    }
+
+    return node;
+}
+
 ProgramNode *ast_program_create(ASTNode *root, List *function_definitions, List *type_definitions, int line, int column)
 {
     if (!root || !function_definitions || !type_definitions)

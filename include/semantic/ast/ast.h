@@ -389,6 +389,48 @@ typedef struct BaseCallNode
 } BaseCallNode;
 
 /**
+ * @brief Nodo para expresión de comprobación de tipo (is).
+ *
+ * Representa la expresión `expr is Type`, que verifica si el resultado
+ * de `expr` es una instancia de `Type` o de un subtipo.
+ *
+ * Campos:
+ * 
+ *   - base:      Nodo base del AST.
+ * 
+ *   - target:    Expresión a comprobar (toma ownership).
+ * 
+ *   - type_name: Nombre del tipo contra el que se comprueba.
+ */
+typedef struct IsNode
+{
+    ASTNode base;
+    ASTNode *target;
+    char *type_name;
+} IsNode;
+
+/**
+ * @brief Nodo para expresión de conversión de tipo (as).
+ *
+ * Representa la expresión `expr as Type`, que convierte el resultado
+ * de `expr` al tipo `Type` en tiempo de ejecución.
+ *
+ * Campos:
+ * 
+ *   - base:      Nodo base del AST.
+ * 
+ *   - target:    Expresión a convertir (toma ownership).
+ * 
+ *   - type_name: Nombre del tipo al que se convierte.
+ */
+typedef struct AsNode
+{
+    ASTNode base;
+    ASTNode *target;
+    char *type_name;
+} AsNode;
+
+/**
  * @brief Nodo raíz del programa.
  * 
  * Contiene las listas de definiciones de funciones y tipos declarados en el programa,
@@ -628,6 +670,28 @@ TypeInstanciationNode *ast_type_instanciation_create(const char *type_name, List
  * @return Puntero al nodo creado, o NULL si falla la asignación.
  */
 BaseCallNode *ast_base_call_create(const char *method_name, const char *type_name, List *args, int line, int column);
+
+/**
+ * @brief Crea un nodo de expresión is.
+ *
+ * @param target    Expresión a comprobar (toma ownership). No puede ser NULL.
+ * @param type_name Nombre del tipo (se copia internamente). No puede ser NULL.
+ * @param line      Número de línea.
+ * @param column    Número de columna.
+ * @return Puntero al nodo creado, o NULL si falla la asignación.
+ */
+IsNode *ast_is_create(ASTNode *target, const char *type_name, int line, int column);
+
+/**
+ * @brief Crea un nodo de expresión as.
+ *
+ * @param target    Expresión a convertir (toma ownership). No puede ser NULL.
+ * @param type_name Nombre del tipo (se copia internamente). No puede ser NULL.
+ * @param line      Número de línea.
+ * @param column    Número de columna.
+ * @return Puntero al nodo creado, o NULL si falla la asignación.
+ */
+AsNode *ast_as_create(ASTNode *target, const char *type_name, int line, int column);
 
 /**
  * @brief Crea un nodo de programa.

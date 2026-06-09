@@ -42,6 +42,10 @@ COLLECTIONS_BUILD_OBJ = $(patsubst %.c,$(BUILD_DIR)/%.o,$(COLLECTIONS_SRC))
 # Compilar todos los .c (sin linkear)
 all: $(PROJECT_BUILD_OBJ) $(COLLECTIONS_BUILD_OBJ)
 
+# Regla build: compila el ejecutable ./hulk
+build: $(PROJECT_BUILD_OBJ) $(COLLECTIONS_BUILD_OBJ)
+	$(CC) $(CFLAGS) $(INCLUDES) src/main.c $^ -o hulk
+
 # Regla para compilar tests
 test: $(PROJECT_BUILD_OBJ) $(COLLECTIONS_BUILD_OBJ)
 	@if [ -z "$(TEST)" ]; then \
@@ -70,5 +74,6 @@ $(BUILD_DIR)/%.o: %.c
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -f test_runner
+	rm -f hulk
 
-.PHONY: all test test-memcheck clean
+.PHONY: all build test test-memcheck clean

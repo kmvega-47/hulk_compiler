@@ -4,8 +4,9 @@ CFLAGS = -Wall -Wextra -std=c11 -g
 
 # Rutas de includes
 INCLUDES = -Iinclude/common \
-           -Iinclude/enums \
            -Iinclude/diagnostic_manager \
+           -Iinclude/enums \
+           -Iinclude/semantic/type_system \
            -Ilib/collections/include \
            -Ilib/collections/include/common \
            -Ilib/collections/include/vector \
@@ -16,8 +17,9 @@ CUNIT_FLAGS = -lcunit
 
 # Directorios de fuentes del proyecto
 PROJECT_SRC_DIRS = src/common \
+                   src/diagnostic_manager \
                    src/enums \
-                   src/diagnostic_manager
+                   src/semantic/type_system
 
 # Directorios de fuentes de collections
 COLLECTIONS_SRC_DIRS = lib/collections/src/common \

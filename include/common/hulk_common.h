@@ -1,6 +1,8 @@
 #ifndef HULK_COMMON_H
 #define HULK_COMMON_H
 
+#define _POSIX_C_SOURCE 200809L
+
 /* Bibliotecas estándar */
 #include <math.h>
 #include <stdio.h>

@@ -10,6 +10,9 @@ INCLUDES = -Iinclude/common \
            -Iinclude/semantic/scope \
            -Iinclude/semantic/symbol_binding \
            -Iinclude/semantic/ast \
+           -Iinclude/semantic/visitor \
+           -Iinclude/semantic/visitor/print_visitor \
+           -Iinclude/semantic/visitor/free_visitor \
            -Ilib/collections/include \
            -Ilib/collections/include/common \
            -Ilib/collections/include/vector \
@@ -25,7 +28,10 @@ PROJECT_SRC_DIRS = src/common \
                    src/semantic/type_system \
                    src/semantic/scope \
                    src/semantic/symbol_binding \
-                   src/semantic/ast
+                   src/semantic/ast \
+                   src/semantic/visitor \
+                   src/semantic/visitor/print_visitor \
+                   src/semantic/visitor/free_visitor
 
 # Directorios de fuentes de collections
 COLLECTIONS_SRC_DIRS = lib/collections/src/common \

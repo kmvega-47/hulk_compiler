@@ -32,6 +32,7 @@ static const char *AST_NODE_TYPE_STRINGS[] = {
     [NODE_ATTRIBUTE_ACCESS]  = "AttributeAccess",
     [NODE_TYPE_INSTANCIATION] = "TypeInstantiation",
     [NODE_METHOD_ACCESS] = "MethodAccess", 
+    [NODE_BASE_CALL] = "BaseCall",
 };
 
 static const char *OPERATOR_STRINGS[] = {

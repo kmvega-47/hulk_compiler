@@ -364,6 +364,31 @@ typedef struct TypeInstanciationNode
 } TypeInstanciationNode;
 
 /**
+ * @brief Nodo para llamada a la implementación base de un método (base()).
+ *
+ * Representa una llamada al método del mismo nombre en el tipo padre.
+ * Solo es válido dentro de un método de un tipo definido por el usuario.
+ *
+ * Campos:
+ * 
+ *   - base:        Nodo base del AST.
+ * 
+ *   - method_name: Nombre del método desde el que se invoca.
+ * 
+ *   - type_name:   Nombre del tipo actual (para resolver el padre).
+ * 
+ *   - args:        Lista de ASTNode* con los argumentos (toma ownership).
+ *                  No puede ser NULL (usar lista vacía para cero argumentos).
+ */
+typedef struct BaseCallNode
+{
+    ASTNode base;
+    char *method_name;
+    char *type_name;
+    List *args;
+} BaseCallNode;
+
+/**
  * @brief Nodo raíz del programa.
  * 
  * Contiene las listas de definiciones de funciones y tipos declarados en el programa,
@@ -591,6 +616,18 @@ MethodAccessNode *ast_method_access_create(ASTNode *target, const char *method_n
  * @return Puntero al nodo creado, o NULL si falla la asignación o algún parámetro obligatorio es NULL.
  */
 TypeInstanciationNode *ast_type_instanciation_create(const char *type_name, List *args, int line, int column);
+
+/**
+ * @brief Crea un nodo de llamada a base().
+ *
+ * @param method_name Nombre del método actual.
+ * @param type_name   Nombre del tipo actual.
+ * @param args        Lista de argumentos (toma ownership). No puede ser NULL.
+ * @param line        Número de línea.
+ * @param column      Número de columna.
+ * @return Puntero al nodo creado, o NULL si falla la asignación.
+ */
+BaseCallNode *ast_base_call_create(const char *method_name, const char *type_name, List *args, int line, int column);
 
 /**
  * @brief Crea un nodo de programa.

@@ -112,11 +112,10 @@ void test_user_type_create_null_name(void)
     List *params = list_create(0, NULL, NULL, NULL, NULL);
     UserTypeDescriptor *type = user_type_create(NULL, NULL, params);
 
-    CU_ASSERT_PTR_NOT_NULL(type);
-    CU_ASSERT_PTR_NULL(type->base.name);
-    printf("base.name = %p (esperado: NULL)\n", (void *)type->base.name);
+    CU_ASSERT_PTR_NULL(type);
+    printf("type = %p (esperado: NULL)\n", (void *)type);
 
-    user_type_destroy(type);
+    list_destroy(params);
 }
 
 void test_type_to_user_defined_valid(void)
@@ -249,6 +248,28 @@ void test_user_type_add_and_lookup_attribute(void)
     type_destroy(attr2);
 }
 
+void test_user_type_add_attribute_null_attr_type(void)
+{
+    printf("\n\n------------ Inicio test: test_user_type_add_attribute_null_attr_type ------------\n");
+    printf("Agregando atributo con attr_type=NULL (permitido, tipo aun no conocido)\n");
+
+    List *params = list_create(0, NULL, NULL, NULL, NULL);
+    UserTypeDescriptor *type = user_type_create("Test", NULL, params);
+
+    user_type_add_attribute(type, "unknown_attr", NULL);
+
+    printf("attribute_names count = %zu (esperado: 1)\n", list_count(type->attribute_names));
+    printf("attribute_types count = %zu (esperado: 1)\n", list_count(type->attribute_types));
+    CU_ASSERT_EQUAL(list_count(type->attribute_names), 1);
+    CU_ASSERT_EQUAL(list_count(type->attribute_types), 1);
+
+    TypeDescriptor *found = user_type_lookup_attribute(type, "unknown_attr");
+    CU_ASSERT_PTR_NULL(found);
+    printf("lookup 'unknown_attr' = %p (esperado: NULL)\n", (void *)found);
+
+    user_type_destroy(type);
+}
+
 void test_user_type_lookup_attribute_not_found(void)
 {
     printf("\n\n------------ Inicio test: test_user_type_lookup_attribute_not_found ------------\n");
@@ -314,29 +335,20 @@ void test_user_type_lookup_attribute_null(void)
     user_type_destroy(type);
 }
 
-void test_user_type_add_attribute_null(void)
+void test_user_type_add_attribute_null_name(void)
 {
-    printf("\n\n------------ Inicio test: test_user_type_add_attribute_null ------------\n");
-    printf("Agregando atributo con parametros NULL (no crashea)\n");
-
-    user_type_add_attribute(NULL, "x", NULL);
-    CU_PASS("user_type_add_attribute(NULL, 'x', NULL) no crasheo");
+    printf("\n\n------------ Inicio test: test_user_type_add_attribute_null_name ------------\n");
+    printf("Agregando atributo con name=NULL (no crashea)\n");
 
     List *params = list_create(0, NULL, NULL, NULL, NULL);
     UserTypeDescriptor *type = user_type_create("Test", NULL, params);
-    TypeDescriptor *attr = type_create(HULK_NUMBER, "Number", NULL);
 
-    user_type_add_attribute(type, NULL, attr);
-    CU_PASS("user_type_add_attribute(type, NULL, attr) no crasheo");
-
-    user_type_add_attribute(type, "x", NULL);
-    CU_PASS("user_type_add_attribute(type, 'x', NULL) no crasheo");
+    user_type_add_attribute(type, NULL, NULL);
 
     CU_ASSERT_EQUAL(list_count(type->attribute_names), 0);
     printf("attribute_names count = %zu (esperado: 0)\n", list_count(type->attribute_names));
 
     user_type_destroy(type);
-    type_destroy(attr);
 }
 
 void test_user_type_add_and_has_method(void)
@@ -523,10 +535,11 @@ int main(void)
     CU_add_test(suite, "test_user_type_update_param_type_null_type", test_user_type_update_param_type_null_type);
 
     CU_add_test(suite, "test_user_type_add_and_lookup_attribute", test_user_type_add_and_lookup_attribute);
+    CU_add_test(suite, "test_user_type_add_attribute_null_attr_type", test_user_type_add_attribute_null_attr_type);
     CU_add_test(suite, "test_user_type_lookup_attribute_not_found", test_user_type_lookup_attribute_not_found);
     CU_add_test(suite, "test_user_type_lookup_attribute_no_ancestor_search", test_user_type_lookup_attribute_no_ancestor_search);
     CU_add_test(suite, "test_user_type_lookup_attribute_null", test_user_type_lookup_attribute_null);
-    CU_add_test(suite, "test_user_type_add_attribute_null", test_user_type_add_attribute_null);
+    CU_add_test(suite, "test_user_type_add_attribute_null_name", test_user_type_add_attribute_null_name);
 
     CU_add_test(suite, "test_user_type_add_and_has_method", test_user_type_add_and_has_method);
     CU_add_test(suite, "test_user_type_has_method_ancestor", test_user_type_has_method_ancestor);

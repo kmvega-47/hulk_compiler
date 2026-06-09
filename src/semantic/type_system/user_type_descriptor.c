@@ -2,13 +2,16 @@
 
 UserTypeDescriptor *user_type_create(const char *name, TypeDescriptor *parent, List *param_types)
 {
+    if (!name)
+        return NULL;
+
     UserTypeDescriptor *type = (UserTypeDescriptor *)malloc(sizeof(UserTypeDescriptor));
     if (!type)
         return NULL;
 
     type->base.tag = HULK_USER_DEFINED;
-    type->base.name = name ? strdup(name) : NULL;
-    type->base.parent = parent;
+    type->base.name = strdup(name);
+    type->base.parent = parent ? parent : NULL;
 
     type->param_types = param_types;
 
@@ -90,7 +93,7 @@ TypeDescriptor *user_type_lookup_attribute(const UserTypeDescriptor *type, const
 
 void user_type_add_attribute(UserTypeDescriptor *type, const char *name, TypeDescriptor *attr_type)
 {
-    if (!type || !name || !attr_type)
+    if (!type || !name)
         return;
 
     char *name_copy = strdup(name);

@@ -7,6 +7,7 @@ INCLUDES = -Iinclude/common \
            -Iinclude/diagnostic_manager \
            -Iinclude/enums \
            -Iinclude/semantic/type_system \
+           -Iinclude/semantic/scope \
            -Ilib/collections/include \
            -Ilib/collections/include/common \
            -Ilib/collections/include/vector \
@@ -19,7 +20,8 @@ CUNIT_FLAGS = -lcunit
 PROJECT_SRC_DIRS = src/common \
                    src/diagnostic_manager \
                    src/enums \
-                   src/semantic/type_system
+                   src/semantic/type_system \
+                   src/semantic/scope
 
 # Directorios de fuentes de collections
 COLLECTIONS_SRC_DIRS = lib/collections/src/common \

@@ -8,6 +8,8 @@ INCLUDES = -Iinclude/common \
            -Iinclude/enums \
            -Iinclude/semantic/type_system \
            -Iinclude/semantic/scope \
+           -Iinclude/semantic/symbol_binding \
+           -Iinclude/semantic/ast \
            -Ilib/collections/include \
            -Ilib/collections/include/common \
            -Ilib/collections/include/vector \
@@ -21,7 +23,9 @@ PROJECT_SRC_DIRS = src/common \
                    src/diagnostic_manager \
                    src/enums \
                    src/semantic/type_system \
-                   src/semantic/scope
+                   src/semantic/scope \
+                   src/semantic/symbol_binding \
+                   src/semantic/ast
 
 # Directorios de fuentes de collections
 COLLECTIONS_SRC_DIRS = lib/collections/src/common \

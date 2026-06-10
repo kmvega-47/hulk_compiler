@@ -183,9 +183,35 @@ static void *visit_variable_reference_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_reassignment_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    ReassignmentNode *reassign = (ReassignmentNode *)node;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+
+    // Inferir el tipo del target
+    TypeDescriptor *target_type = ast_accept(reassign->target, visitor);
+
+    // Inferir el tipo del valor
+    ast_accept(reassign->value, visitor);
+
+    // Verificar que el target sea válido para reasignación
+    if (reassign->target->node_type == NODE_VARIABLE_REFERENCE)
+    {
+        VariableReferenceNode *var_ref = (VariableReferenceNode *)reassign->target;
+
+        if (scope_is_self_instance(infer->current_scope, var_ref->name))
+        {
+            dm_add_error(dm_global, ERROR_TYPE_SEMANTIC,
+                reassign->base.line, reassign->base.column, "'self' is not a valid assignment target when referring to type's instance");
+        }
+
+        if (scope_is_constant(infer->current_scope, var_ref->name))
+        {
+            dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, reassign->base.line, reassign->base.column, "Cannot reassign constant '%s'", var_ref->name);
+        }
+    }
+
+    // El tipo del reassignment es el tipo del target
+    reassign->base.return_type = target_type;
+    return target_type;
 }
 
 static void *visit_function_definition_node(Visitor *visitor, ASTNode *node)

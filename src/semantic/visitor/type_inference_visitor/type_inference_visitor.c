@@ -99,9 +99,67 @@ static void *visit_while_loop_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_let_in_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    LetInNode *let_in = (LetInNode *)node;
+
+    // Crear un nuevo scope hijo del actual
+    Scope *new_scope = scope_create(infer->current_scope);
+
+    Scope *old_scope = infer->current_scope;
+    Scope *current = new_scope;
+
+    infer->current_scope = current;
+
+    // Procesar cada binding
+    for (size_t i = 0; i < list_count(let_in->bindings); i++)
+    {
+        SymbolBinding *binding = (SymbolBinding *)list_get(let_in->bindings, i);
+
+        // Si el símbolo ya existe en este scope, crear un nuevo scope anidado (shadowing)
+        if (scope_lookup_current(current, binding->name))
+        {
+            Scope *extra = scope_create(current);
+            current = extra;
+            infer->current_scope = current;
+        }
+
+        // Inferir el tipo del inicializador
+        ast_accept(binding->initializer, visitor);
+
+        TypeDescriptor *var_type = NULL;
+
+        // Si tiene anotación de tipo, buscarlo en la tabla
+        if (binding->type_name)
+        {
+            var_type = type_table_lookup_by_name(global_type_table, binding->type_name);
+
+            if (!var_type)
+            {
+                dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, binding->line, binding->column, "Type '%s' is not defined", binding->type_name);
+            }
+        }
+
+        else
+        {
+            // Sin anotación, usar el tipo inferido del inicializador
+            var_type = binding->initializer->return_type;
+        }
+
+        // Guardar el tipo resuelto en el binding y registrar en el scope
+        binding->return_type = var_type;
+        scope_add_variable(current, binding->name, var_type);
+    }
+
+    // Inferir el cuerpo del let con el nuevo scope
+    TypeDescriptor *body_type = ast_accept(let_in->body, visitor);
+
+    // Restaurar el scope original y destruir los scopes creados
+    infer->current_scope = old_scope;
+    scope_destroy_until(current, old_scope);
+
+    // El tipo del let es el tipo de su cuerpo
+    let_in->base.return_type = body_type;
+    return body_type;
 }
 
 static void *visit_variable_reference_node(Visitor *visitor, ASTNode *node)

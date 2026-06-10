@@ -414,16 +414,34 @@ static void *visit_method_access_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_type_instanciation_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
-}
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    TypeInstanciationNode *inst = (TypeInstanciationNode *)node;
 
-static void *visit_program_node(Visitor *visitor, ASTNode *node)
-{
-    (void)visitor;
-    (void)node;
-    return NULL;
+    // Buscar el tipo a instanciar
+    TypeDescriptor *type = type_table_lookup_by_name(global_type_table, inst->type_name);
+    if (!type)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, inst->base.line, inst->base.column, "Undefined type '%s'", inst->type_name);
+        inst->base.return_type = NULL;
+        return NULL;
+    }
+
+    if (type->tag != HULK_USER_DEFINED)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, inst->base.line, inst->base.column, "Cannot instantiate built-in type '%s'", inst->type_name);
+        inst->base.return_type = NULL;
+        return NULL;
+    }
+
+    // Inferir recursivamente los argumentos
+    for (size_t i = 0; i < list_count(inst->args); i++)
+    {
+        ASTNode *arg = (ASTNode *)list_get(inst->args, i);
+        ast_accept(arg, visitor);
+    }
+
+    inst->base.return_type = type;
+    return type;
 }
 
 static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
@@ -446,6 +464,14 @@ static void *visit_as_node(Visitor *visitor, ASTNode *node)
     (void)node;
     return NULL;
 }
+
+static void *visit_program_node(Visitor *visitor, ASTNode *node)
+{
+    (void)visitor;
+    (void)node;
+    return NULL;
+}
+
 
 TypeInferenceVisitor *type_inference_visitor_create(void)
 {

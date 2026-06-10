@@ -52,7 +52,7 @@ static void *visit_expression_block_node(Visitor *visitor, ASTNode *node)
     }
 
     TypeDescriptor *last_type = NULL;
-    
+
     for (size_t i = 0; i < list_count(block->expressions); i++)
     {
         ASTNode *expr = (ASTNode *)list_get(block->expressions, i);
@@ -65,9 +65,21 @@ static void *visit_expression_block_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_conditional_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    ConditionalNode *cond = (ConditionalNode *)node;
+
+    ast_accept(cond->condition, visitor);
+    TypeDescriptor *then_type = ast_accept(cond->then_branch, visitor);
+
+    if (!cond->else_branch)
+    {
+        cond->base.return_type = then_type;
+        return then_type;
+    }
+
+    TypeDescriptor *else_type = ast_accept(cond->else_branch, visitor);
+
+    cond->base.return_type = type_lca(then_type, else_type);
+    return cond->base.return_type;
 }
 
 static void *visit_while_loop_node(Visitor *visitor, ASTNode *node)

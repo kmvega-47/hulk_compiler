@@ -221,7 +221,7 @@ static void *visit_function_definition_node(Visitor *visitor, ASTNode *node)
 
     // Construir el nombre de la función/método según corresponda
     const char *func_name;
-    
+
     if (infer->current_type)
     {
         // Es un método: guardar nombre para base() y usar nombre compuesto
@@ -289,9 +289,38 @@ static void *visit_function_definition_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_function_call_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    FunctionCallNode *call = (FunctionCallNode *)node;
+
+    // Inferir recursivamente cada argumento
+    for (size_t i = 0; i < list_count(call->args); i++)
+    {
+        ASTNode *arg = (ASTNode *)list_get(call->args, i);
+        ast_accept(arg, visitor);
+    }
+
+    // Buscar el tipo de retorno de la función en la tabla global
+    TypeDescriptor *return_type = function_table_get_return_type(global_function_table, call->name);
+
+    if (!return_type)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC,
+            call->base.line, call->base.column,
+            "Function '%s' is not defined", call->name);
+    }
+
+    else
+    {
+        // Verificar cantidad de argumentos
+        List *param_types = function_table_get_params_types(global_function_table, call->name);
+        if (list_count(call->args) != list_count(param_types))
+        {
+            dm_add_error(dm_global, ERROR_TYPE_SEMANTIC,
+                call->base.line, call->base.column, "Function '%s' expects %zu arguments but got %zu", call->name, list_count(param_types), list_count(call->args));
+        }
+    }
+
+    call->base.return_type = return_type;
+    return return_type;
 }
 
 static void *visit_type_definition_node(Visitor *visitor, ASTNode *node)

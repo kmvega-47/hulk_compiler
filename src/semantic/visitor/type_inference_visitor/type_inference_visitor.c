@@ -291,26 +291,23 @@ static void *visit_function_call_node(Visitor *visitor, ASTNode *node)
 {
     FunctionCallNode *call = (FunctionCallNode *)node;
 
-    // Inferir recursivamente cada argumento
     for (size_t i = 0; i < list_count(call->args); i++)
     {
         ASTNode *arg = (ASTNode *)list_get(call->args, i);
         ast_accept(arg, visitor);
     }
 
-    // Buscar el tipo de retorno de la función en la tabla global
-    TypeDescriptor *return_type = function_table_get_return_type(global_function_table, call->name);
+    bool found = false;
+    TypeDescriptor *return_type = function_table_get_return_type(global_function_table, call->name, &found);
 
-    if (!return_type)
+    if (!found)
     {
         dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, call->base.line, call->base.column, "Function '%s' is not defined", call->name);
     }
 
     else
     {
-        // Verificar cantidad de argumentos
         List *param_types = function_table_get_params_types(global_function_table, call->name);
-
         if (list_count(call->args) != list_count(param_types))
         {
             dm_add_error(dm_global, ERROR_TYPE_SEMANTIC,
@@ -448,7 +445,6 @@ static void *visit_method_access_node(Visitor *visitor, ASTNode *node)
     // Obtener tipo del target
     TypeDescriptor *target_type = method->target->return_type;
 
-    // Por si no se ha determinado aun el tipo
     if (!target_type)
     {
         method->base.return_type = NULL;
@@ -467,11 +463,11 @@ static void *visit_method_access_node(Visitor *visitor, ASTNode *node)
 
     // Construir nombre compuesto del método y buscar en la tabla global
     char *full_name = function_table_build_method_name(user_type->base.name, method->method_name);
-    TypeDescriptor *return_type = function_table_get_return_type(global_function_table, full_name);
-    
+    bool found = false;
+    TypeDescriptor *return_type = function_table_get_return_type(global_function_table, full_name, &found);
     free(full_name);
 
-    if (!return_type)
+    if (!found)
     {
         dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, method->base.line, method->base.column, "Method '%s' is not defined in type '%s' or its ancestors", method->method_name, user_type->base.name);
     }
@@ -540,11 +536,13 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
 
     // Buscar el método en la tabla global con el nombre del ancestro
     char *full_name = function_table_build_method_name(ancestor->base.name, infer->current_method_name);
-    TypeDescriptor *return_type = function_table_get_return_type(global_function_table, full_name);
+    bool found = false;
+    
+    TypeDescriptor *return_type = function_table_get_return_type(global_function_table, full_name, &found);
     
     free(full_name);
 
-    if (!return_type)
+    if (!found)
     {
         dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, base_call->base.line, base_call->base.column, "Method '%s' not found in ancestor '%s'", infer->current_method_name, ancestor->base.name);
     }

@@ -116,9 +116,12 @@ bool function_table_exists(FunctionTable *table, const char *name)
     return function_table_search(table, name) != NULL;
 }
 
-TypeDescriptor *function_table_get_return_type(FunctionTable *table, const char *name)
+TypeDescriptor *function_table_get_return_type(FunctionTable *table, const char *name, bool *found)
 {
     FunctionEntry *entry = function_table_search(table, name);
+    if (found)
+        *found = (entry != NULL);
+
     if (!entry)
         return NULL;
 
@@ -172,7 +175,7 @@ void function_table_set_func_type(FunctionTable *table, const char *name, LLVMTy
 
 bool function_table_insert(FunctionTable *table, const char *name, TypeDescriptor *return_type, List *params_types)
 {
-    if (!table || !name || !return_type || !params_types)
+    if (!table || !name  || !params_types)
         return false;
 
     if (function_table_exists(table, name))

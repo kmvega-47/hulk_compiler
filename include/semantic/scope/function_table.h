@@ -49,9 +49,10 @@ bool function_table_exists(FunctionTable *table, const char *name);
  *
  * @param table Tabla de funciones a consultar.
  * @param name  Nombre de la función a buscar.
- * @return TypeDescriptor* del tipo de retorno, o NULL si no se encuentra.
+ * @param found Puntero a bool que indica si la función fue encontrada (puede ser NULL).
+ * @return TypeDescriptor* del tipo de retorno, o NULL si no se encuentra o es NULL.
  */
-TypeDescriptor *function_table_get_return_type(FunctionTable *table, const char *name);
+TypeDescriptor *function_table_get_return_type(FunctionTable *table, const char *name, bool *found);
 
 /**
  * @brief Obtiene los tipos de los parámetros de la función con el nombre buscado.

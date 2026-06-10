@@ -71,9 +71,10 @@ List *vector_to_list(Vector *vec) {
     return listx;
 }
 
-size_t list_count(const List *listx) {
+size_t list_count(const List *listx) 
+{
     if (!listx)
-        raise_error("NullReferenceError", "list_count", "list cannot be null");
+        return 0;
 
     return listx->count;  
 }

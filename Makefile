@@ -15,6 +15,7 @@ INCLUDES = -Iinclude/common \
            -Iinclude/semantic/visitor/print_visitor \
            -Iinclude/semantic/visitor/free_visitor \
            -Iinclude/semantic/visitor/type_inference_visitor \
+           -Iinclude/semantic/visitor/constraint_collector_visitor \
            -Ilib/collections/include \
            -Ilib/collections/include/common \
            -Ilib/collections/include/vector \
@@ -42,7 +43,8 @@ PROJECT_SRC = src/common/hulk_common.c \
               src/semantic/visitor/visitor.c \
               src/semantic/visitor/print_visitor/print_visitor.c \
               src/semantic/visitor/free_visitor/free_visitor.c \
-              src/semantic/visitor/type_inference_visitor/type_inference_visitor.c
+              src/semantic/visitor/type_inference_visitor/type_inference_visitor.c \
+              src/semantic/visitor/constraint_collector_visitor/type_constraint.c
 
 # Fuentes de collections
 COLLECTIONS_SRC = lib/collections/src/common/common.c \

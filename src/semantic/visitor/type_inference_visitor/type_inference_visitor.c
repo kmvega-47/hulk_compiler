@@ -433,7 +433,6 @@ static void *visit_attribute_access_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_method_access_node(Visitor *visitor, ASTNode *node)
 {
-    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
     MethodAccessNode *method = (MethodAccessNode *)node;
 
     // Inferir el target
@@ -483,7 +482,6 @@ static void *visit_method_access_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_type_instanciation_node(Visitor *visitor, ASTNode *node)
 {
-    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
     TypeInstanciationNode *inst = (TypeInstanciationNode *)node;
 
     // Buscar el tipo a instanciar
@@ -557,7 +555,6 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_is_node(Visitor *visitor, ASTNode *node)
 {
-    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
     IsNode *is_node = (IsNode *)node;
 
     // Inferir el target
@@ -577,7 +574,6 @@ static void *visit_is_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_as_node(Visitor *visitor, ASTNode *node)
 {
-    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
     AsNode *as_node = (AsNode *)node;
 
     // Inferir el target

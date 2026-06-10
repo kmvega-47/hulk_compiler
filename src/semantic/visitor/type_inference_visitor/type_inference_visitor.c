@@ -8,23 +8,59 @@ static void *visit_literal_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_unary_operation_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    UnaryOperationNode *unary = (UnaryOperationNode *)node;
+
+    ast_accept(unary->operand, visitor);
+
+    if (unary->operator == OP_NOT)
+        unary->base.return_type = type_table_lookup_by_tag(global_type_table, HULK_BOOL);
+
+    else if (unary->operator == OP_SUB)
+        unary->base.return_type = type_table_lookup_by_tag(global_type_table, HULK_NUMBER);
+
+    return unary->base.return_type;
 }
+
 
 static void *visit_binary_operation_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    BinaryOperationNode *bin = (BinaryOperationNode *)node;
+
+    ast_accept(bin->left, visitor);
+    ast_accept(bin->right, visitor);
+
+    if (is_arithmetic_operator(bin->operator))
+        bin->base.return_type = type_table_lookup_by_tag(global_type_table, HULK_NUMBER);
+
+    else if (is_comparison_operator(bin->operator) || is_logical_operator(bin->operator))
+        bin->base.return_type = type_table_lookup_by_tag(global_type_table, HULK_BOOL);
+
+    else if (is_string_operator(bin->operator))
+        bin->base.return_type = type_table_lookup_by_tag(global_type_table, HULK_STRING);
+
+    return bin->base.return_type;
 }
 
 static void *visit_expression_block_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    ExpressionBlockNode *block = (ExpressionBlockNode *)node;
+
+    if (list_count(block->expressions) == 0)
+    {
+        block->base.return_type = type_table_lookup_by_tag(global_type_table, HULK_VOID);
+        return block->base.return_type;
+    }
+
+    TypeDescriptor *last_type = NULL;
+    
+    for (size_t i = 0; i < list_count(block->expressions); i++)
+    {
+        ASTNode *expr = (ASTNode *)list_get(block->expressions, i);
+        last_type = ast_accept(expr, visitor);
+    }
+
+    block->base.return_type = last_type;
+    return last_type;
 }
 
 static void *visit_conditional_node(Visitor *visitor, ASTNode *node)

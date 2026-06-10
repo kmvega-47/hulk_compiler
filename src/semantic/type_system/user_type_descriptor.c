@@ -125,7 +125,7 @@ void user_type_update_attribute(UserTypeDescriptor *type, const char *name, Type
     user_type_add_attribute(type, name, attr_type);
 }
 
-bool user_type_has_method(const UserTypeDescriptor *type, const char *name)
+bool user_type_has_own_method(const UserTypeDescriptor *type, const char *name)
 {
     if (!type || !name)
         return false;
@@ -136,6 +136,17 @@ bool user_type_has_method(const UserTypeDescriptor *type, const char *name)
         if (method_name && strcmp(method_name, name) == 0)
             return true;
     }
+
+    return false;
+}
+
+bool user_type_has_method(const UserTypeDescriptor *type, const char *name)
+{
+    if (!type || !name)
+        return false;
+
+    if (user_type_has_own_method(type, name))
+        return true;
 
     if (type->base.parent)
     {
@@ -159,21 +170,21 @@ void user_type_add_method(UserTypeDescriptor *type, const char *name)
     list_append(type->method_names, name_copy);
 }
 
-UserTypeDescriptor *user_type_find_ancestor_with_method(const UserTypeDescriptor *type, const char *method_name)
+UserTypeDescriptor *user_type_find_type_with_method(const UserTypeDescriptor *type, const char *method_name)
 {
     if (!type || !method_name)
         return NULL;
 
-    TypeDescriptor *parent = type->base.parent;
+    const TypeDescriptor *current = (const TypeDescriptor *)type;
 
-    while (parent)
+    while (current)
     {
-        UserTypeDescriptor *parent_user = type_to_user_defined(parent);
+        UserTypeDescriptor *current_user = type_to_user_defined((TypeDescriptor *)current);
 
-        if (parent_user && user_type_has_method(parent_user, method_name))
-            return parent_user;
+        if (current_user && user_type_has_own_method(current_user, method_name))
+            return current_user;
 
-        parent = parent->parent;
+        current = current->parent;
     }
 
     return NULL;

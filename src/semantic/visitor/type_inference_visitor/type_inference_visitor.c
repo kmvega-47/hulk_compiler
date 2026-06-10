@@ -461,10 +461,22 @@ static void *visit_method_access_node(Visitor *visitor, ASTNode *node)
 
     UserTypeDescriptor *user_type = (UserTypeDescriptor *)target_type;
 
+    // Buscar el tipo que realmente define el método (el propio o un ancestro)
+    UserTypeDescriptor *owner = user_type_find_type_with_method(user_type, method->method_name);
+
+    if (!owner)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, method->base.line, method->base.column, "Method '%s' is not defined in type '%s' or its ancestors", method->method_name, user_type->base.name);
+        method->base.return_type = NULL;
+        return NULL;
+    }
+
     // Construir nombre compuesto del método y buscar en la tabla global
-    char *full_name = function_table_build_method_name(user_type->base.name, method->method_name);
+    char *full_name = function_table_build_method_name(owner->base.name, method->method_name);
     bool found = false;
+
     TypeDescriptor *return_type = function_table_get_return_type(global_function_table, full_name, &found);
+    
     free(full_name);
 
     if (!found)
@@ -523,9 +535,10 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
         ast_accept(arg, visitor);
     }
 
-    // Buscar el ancestro que tenga el método
+    // Buscar el ancestro que tenga el método (empezando desde el padre)
     UserTypeDescriptor *user_type = type_to_user_defined(infer->current_type);
-    UserTypeDescriptor *ancestor = user_type_find_ancestor_with_method(user_type, infer->current_method_name);
+    UserTypeDescriptor *parent_user = type_to_user_defined(user_type->base.parent);
+    UserTypeDescriptor *ancestor = user_type_find_type_with_method(parent_user, infer->current_method_name);
 
     if (!ancestor)
     {
@@ -537,9 +550,9 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
     // Buscar el método en la tabla global con el nombre del ancestro
     char *full_name = function_table_build_method_name(ancestor->base.name, infer->current_method_name);
     bool found = false;
-    
+
     TypeDescriptor *return_type = function_table_get_return_type(global_function_table, full_name, &found);
-    
+
     free(full_name);
 
     if (!found)

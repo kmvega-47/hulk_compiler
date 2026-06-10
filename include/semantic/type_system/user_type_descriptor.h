@@ -119,6 +119,11 @@ void user_type_add_attribute(UserTypeDescriptor *type, const char *name, TypeDes
 void user_type_update_attribute(UserTypeDescriptor *type, const char *name, TypeDescriptor *attr_type);
 
 /**
+ * @brief Verifica si un método está definido directamente en este tipo (sin buscar ancestros).
+ */
+bool user_type_has_own_method(const UserTypeDescriptor *type, const char *name);
+
+/**
  * @brief Verifica si un método existe en el tipo (busca en ancestros).
  *
  * @param type Descriptor del tipo.
@@ -136,12 +141,12 @@ bool user_type_has_method(const UserTypeDescriptor *type, const char *name);
 void user_type_add_method(UserTypeDescriptor *type, const char *name);
 
 /**
- * @brief Busca el ancestro más cercano que tenga un método con el nombre dado.
+ * @brief Busca el tipo más cercano (incluyendo el propio) que tenga un método.
  *
- * @param type        Tipo desde donde iniciar la búsqueda (se excluye a sí mismo).
+ * @param type        Tipo desde donde iniciar la búsqueda (se incluye a sí mismo).
  * @param method_name Nombre del método a buscar.
- * @return UserTypeDescriptor del ancestro que tiene el método, o NULL si no se encuentra.
+ * @return UserTypeDescriptor que tiene el método, o NULL si no se encuentra.
  */
-UserTypeDescriptor *user_type_find_ancestor_with_method(const UserTypeDescriptor *type, const char *method_name);
+UserTypeDescriptor *user_type_find_type_with_method(const UserTypeDescriptor *type, const char *method_name);
 
 #endif

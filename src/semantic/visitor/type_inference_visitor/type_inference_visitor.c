@@ -216,9 +216,75 @@ static void *visit_reassignment_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_function_definition_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    FunctionDefinitionNode *func = (FunctionDefinitionNode *)node;
+
+    // Construir el nombre de la función/método según corresponda
+    const char *func_name;
+    
+    if (infer->current_type)
+    {
+        // Es un método: guardar nombre para base() y usar nombre compuesto
+        infer->current_method_name = func->name;
+        char *method_name = function_table_build_method_name(infer->current_type->name, func->name);
+        func_name = method_name;
+    }
+
+    else
+    {
+        func_name = func->name;
+    }
+
+    // Obtener tipos de parámetros desde la tabla
+    List *param_types = function_table_get_params_types(global_function_table, func_name);
+
+    if (!param_types)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, func->base.line, func->base.column, "Undefined function '%s'", func->name);
+        func->base.return_type = NULL;
+        return NULL;
+    }
+
+    // Crear scope para parámetros y cuerpo
+    Scope *new_scope = scope_create(infer->current_scope);
+    Scope *old_scope = infer->current_scope;
+    infer->current_scope = new_scope;
+
+    // Registrar self en el scope si es un método
+    if (infer->current_type)
+        scope_add_self_instance(new_scope, infer->current_type);
+
+    // Registrar parámetros en el scope
+    for (size_t i = 0; i < list_count(func->params); i++)
+    {
+        SymbolBinding *binding = (SymbolBinding *)list_get(func->params, i);
+        TypeDescriptor *param_type = (TypeDescriptor *)list_get(param_types, i);
+
+        binding->return_type = param_type;
+        scope_add_parameter(new_scope, binding->name, param_type);
+    }
+
+    // Inferir el cuerpo
+    TypeDescriptor *body_type = ast_accept(func->body, visitor);
+
+    // Restaurar scope
+    infer->current_scope = old_scope;
+    scope_destroy(new_scope);
+
+    // Limpiar método actual al salir
+    infer->current_method_name = NULL;
+
+    // Actualizar tipo de retorno en la tabla si no tiene anotación
+    if (!func->return_type_annotation)
+        function_table_update(global_function_table, func_name, body_type, NULL);
+
+    // Liberar nombre compuesto si se creó
+    if (infer->current_type)
+        free((void *)func_name);
+
+    // El tipo del nodo de definición es Void
+    func->base.return_type = type_table_lookup_by_tag(global_type_table, HULK_VOID);
+    return func->base.return_type;
 }
 
 static void *visit_function_call_node(Visitor *visitor, ASTNode *node)

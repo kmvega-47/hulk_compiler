@@ -84,10 +84,18 @@ static void *visit_conditional_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_while_loop_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    WhileLoopNode *loop = (WhileLoopNode *)node;
+
+    ast_accept(loop->condition, visitor);
+
+    TypeDescriptor *body_type = NULL;
+    if (loop->body)
+        body_type = ast_accept(loop->body, visitor);
+
+    loop->base.return_type = body_type ? body_type : type_table_lookup_by_tag(global_type_table, HULK_VOID);
+    return loop->base.return_type;
 }
+
 
 static void *visit_let_in_node(Visitor *visitor, ASTNode *node)
 {

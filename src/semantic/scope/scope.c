@@ -64,6 +64,7 @@ static SymbolEntry *scope_lookup_entry(Scope *scope, const char *name)
     while (scope)
     {
         SymbolEntry *entry = scope_lookup_local(scope, name);
+
         if (entry)
             return entry;
 
@@ -140,9 +141,12 @@ bool scope_add_self_instance(Scope *scope, TypeDescriptor *type)
     return scope_add_entry(scope, "self", type, false, false, true);
 }
 
-TypeDescriptor *scope_lookup(Scope *scope, const char *name)
+TypeDescriptor *scope_lookup(Scope *scope, const char *name, bool *found)
 {
     SymbolEntry *entry = scope_lookup_entry(scope, name);
+    if (found)
+        *found = (entry != NULL);
+
     return entry ? entry->type : NULL;
 }
 

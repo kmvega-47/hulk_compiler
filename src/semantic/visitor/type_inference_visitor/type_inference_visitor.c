@@ -167,13 +167,12 @@ static void *visit_variable_reference_node(Visitor *visitor, ASTNode *node)
     TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
     VariableReferenceNode *var_ref = (VariableReferenceNode *)node;
 
-    TypeDescriptor *type = scope_lookup(infer->current_scope, var_ref->name);
+    bool found = false;
+    TypeDescriptor *type = scope_lookup(infer->current_scope, var_ref->name, &found);
 
-    if (!type && !scope_is_error_flag(infer->current_scope, var_ref->name))
+    if (!found)
     {
         dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, var_ref->base.line, var_ref->base.column, "Undefined variable '%s'", var_ref->name);
-
-        // Marca la variable como no definida la primera vez(para evitar reportarlo multiples veces)
         scope_mark_variable_error(infer->current_scope, var_ref->name);
     }
 
@@ -413,7 +412,7 @@ static void *visit_attribute_access_node(Visitor *visitor, ASTNode *node)
 
     // Obtener el tipo de 'self' desde el scope
     VariableReferenceNode *var_ref = (VariableReferenceNode *)attr->target;
-    TypeDescriptor *self_type = scope_lookup(infer->current_scope, var_ref->name);
+    TypeDescriptor *self_type = scope_lookup(infer->current_scope, var_ref->name, NULL);
 
     // Buscar el atributo en el tipo
     UserTypeDescriptor *user_type = (UserTypeDescriptor *)self_type;

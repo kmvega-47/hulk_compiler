@@ -75,9 +75,10 @@ bool scope_add_self_instance(Scope *scope, TypeDescriptor *type);
  *
  * @param scope Scope donde iniciar la búsqueda (incluye ancestros).
  * @param name  Nombre del símbolo.
+ * @param found Puntero a bool que indica si el símbolo fue encontrado (puede ser NULL).
  * @return Tipo del símbolo si existe, NULL en caso contrario.
  */
-TypeDescriptor *scope_lookup(Scope *scope, const char *name);
+TypeDescriptor *scope_lookup(Scope *scope, const char *name, bool *found);
 
 /**
  * @brief Verifica si un símbolo es constante.

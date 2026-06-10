@@ -51,6 +51,16 @@ typedef enum
 } HulkOperator;
 
 /**
+ * @brief Tipo de restricción que se puede aplicar a un parámetro.
+ */
+typedef enum
+{
+    CONSTRAINT_EQUAL,
+    CONSTRAINT_CONFORMS,
+    CONSTRAINT_CONFLICT
+} ConstraintKind;
+
+/**
  * @brief Convierte un error_type_t a su representación en string.
  */
 const char *error_type_to_string(error_type_t type);
@@ -77,12 +87,12 @@ const char* ast_node_type_to_string(ASTNodeType type);
 const char* operator_to_string(HulkOperator op);
 
 /**
- * @brief Convierte un operador a su representación como string.
+ * @brief Convierte un tipo de restricción a su representación como string.
  * 
- * @param op El operador a convertir.
- * @return const char* Representación en texto del operador.
+ * @param type Tipo de restricción.
+ * @return const char* Representación en texto.
  */
-const char* operator_to_string(HulkOperator op);
+const char* constraint_kind_to_string(ConstraintKind type);
 
 /**
  * @brief Determina si un operador es aritmético.

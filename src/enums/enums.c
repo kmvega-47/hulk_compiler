@@ -37,6 +37,12 @@ static const char *AST_NODE_TYPE_STRINGS[] = {
     [NODE_PROGRAM]            = "Program",
 };
 
+static const char *CONSTRAINT_KIND_STRINGS[] = {
+    [CONSTRAINT_EQUAL]     = "=",
+    [CONSTRAINT_CONFORMS]  = "<=",
+    [CONSTRAINT_CONFLICT]  = "CONFLICT",
+};
+
 static const char *OPERATOR_STRINGS[] = {
     [OP_EQUAL]          = "==",
     [OP_NOT_EQUAL]      = "!=",
@@ -79,6 +85,14 @@ const char* ast_node_type_to_string(ASTNodeType type)
         return "Unknown";
     return AST_NODE_TYPE_STRINGS[type];
 }
+
+const char* constraint_kind_to_string(ConstraintKind type)
+{
+    if (type < 0 || type >= (int)(sizeof(CONSTRAINT_KIND_STRINGS) / sizeof(CONSTRAINT_KIND_STRINGS[0])))
+        return "?";
+    return CONSTRAINT_KIND_STRINGS[type];
+}
+
 
 const char* operator_to_string(HulkOperator op)
 {

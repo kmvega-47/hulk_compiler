@@ -8,6 +8,7 @@ typedef struct
     bool is_parameter;
     bool is_self_instance;
     LLVMValueRef alloca;
+    bool error_flag;
 } SymbolEntry;
 
 static SymbolEntry *symbol_entry_create(const char *name, TypeDescriptor *type, bool is_constant, bool is_parameter, bool is_self_instance)
@@ -28,6 +29,7 @@ static SymbolEntry *symbol_entry_create(const char *name, TypeDescriptor *type, 
     entry->is_parameter = is_parameter;
     entry->is_self_instance = is_self_instance;
     entry->alloca = NULL;
+    entry->error_flag = false;
 
     return entry;
 }
@@ -161,6 +163,36 @@ bool scope_is_self_instance(Scope *scope, const char *name)
     SymbolEntry *entry = scope_lookup_entry(scope, name);
     return entry ? entry->is_self_instance : false;
 }
+
+void scope_mark_variable_error(Scope *scope, const char *name)
+{
+    if (!scope || !name)
+        return;
+
+    SymbolEntry *entry = scope_lookup_local(scope, name);
+
+    if (entry)
+    {
+        entry->error_flag = true;
+    }
+    
+    else
+    {
+        SymbolEntry *new_entry = symbol_entry_create(name, NULL, false, false, false);
+        if (new_entry)
+        {
+            new_entry->error_flag = true;
+            list_append(scope->symbols, new_entry);
+        }
+    }
+}
+
+bool scope_is_error_flag(Scope *scope, const char *name)
+{
+    SymbolEntry *entry = scope_lookup_entry(scope, name);
+    return entry ? entry->error_flag : false;
+}
+
 
 void scope_update_symbol(Scope *scope, const char *name, TypeDescriptor *type)
 {

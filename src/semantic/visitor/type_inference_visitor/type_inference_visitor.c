@@ -164,9 +164,21 @@ static void *visit_let_in_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_variable_reference_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    VariableReferenceNode *var_ref = (VariableReferenceNode *)node;
+
+    TypeDescriptor *type = scope_lookup(infer->current_scope, var_ref->name);
+
+    if (!type && !scope_is_error_flag(infer->current_scope, var_ref->name))
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, var_ref->base.line, var_ref->base.column, "Undefined variable '%s'", var_ref->name);
+
+        // Marca la variable como no definida la primera vez(para evitar reportarlo multiples veces)
+        scope_mark_variable_error(infer->current_scope, var_ref->name);
+    }
+
+    var_ref->base.return_type = type;
+    return type;
 }
 
 static void *visit_reassignment_node(Visitor *visitor, ASTNode *node)

@@ -107,6 +107,27 @@ bool scope_is_parameter(Scope *scope, const char *name);
 bool scope_is_self_instance(Scope *scope, const char *name);
 
 /**
+ * @brief Marca una variable como errónea en el scope actual.
+ *
+ * Si la variable ya existe, activa su flag de error.
+ * Si no existe, crea una entrada con tipo NULL y error_flag = true.
+ * Esto evita reportar múltiples veces "Undefined variable" para la misma variable.
+ *
+ * @param scope Scope donde marcar.
+ * @param name  Nombre de la variable.
+ */
+void scope_mark_variable_error(Scope *scope, const char *name);
+
+/**
+ * @brief Verifica si una variable tiene el flag de error activado.
+ *
+ * @param scope Scope donde buscar.
+ * @param name  Nombre de la variable.
+ * @return true si la variable está marcada como error, false en caso contrario.
+ */
+bool scope_is_error_flag(Scope *scope, const char *name);
+
+/**
  * @brief Actualiza el tipo de un símbolo existente.
  *
  * @param scope Scope donde iniciar la búsqueda.

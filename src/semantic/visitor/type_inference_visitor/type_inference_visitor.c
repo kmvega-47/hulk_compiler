@@ -433,9 +433,52 @@ static void *visit_attribute_access_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_method_access_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    MethodAccessNode *method = (MethodAccessNode *)node;
+
+    // Inferir el target
+    ast_accept(method->target, visitor);
+
+    // Inferir los argumentos
+    for (size_t i = 0; i < list_count(method->args); i++)
+    {
+        ASTNode *arg = (ASTNode *)list_get(method->args, i);
+        ast_accept(arg, visitor);
+    }
+
+    // Obtener tipo del target
+    TypeDescriptor *target_type = method->target->return_type;
+
+    // Por si no se ha determinado aun el tipo
+    if (!target_type)
+    {
+        method->base.return_type = NULL;
+        return NULL;
+    }
+
+    // Solo tipos usuario tienen métodos
+    if (target_type->tag != HULK_USER_DEFINED)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, method->base.line, method->base.column, "Type '%s' does not have methods", target_type->name);
+        method->base.return_type = NULL;
+        return NULL;
+    }
+
+    UserTypeDescriptor *user_type = (UserTypeDescriptor *)target_type;
+
+    // Construir nombre compuesto del método y buscar en la tabla global
+    char *full_name = function_table_build_method_name(user_type->base.name, method->method_name);
+    TypeDescriptor *return_type = function_table_get_return_type(global_function_table, full_name);
+    
+    free(full_name);
+
+    if (!return_type)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, method->base.line, method->base.column, "Method '%s' is not defined in type '%s' or its ancestors", method->method_name, user_type->base.name);
+    }
+
+    method->base.return_type = return_type;
+    return return_type;
 }
 
 static void *visit_type_instanciation_node(Visitor *visitor, ASTNode *node)

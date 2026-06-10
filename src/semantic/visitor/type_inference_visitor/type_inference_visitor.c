@@ -591,13 +591,293 @@ static void *visit_as_node(Visitor *visitor, ASTNode *node)
     return type;
 }
 
-static void *visit_program_node(Visitor *visitor, ASTNode *node)
+static void register_function(FunctionDefinitionNode *node, TypeDescriptor *current_type)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    // Construir tipos de parámetros desde las anotaciones
+    List *param_types = build_param_types(node->params, dm_global);
+
+    if (!param_types)
+        return;
+
+    // Resolver tipo de retorno desde la anotación
+    TypeDescriptor *return_type = get_type_from_annotation(node->return_type_annotation);
+
+    if (!return_type && node->return_type_annotation)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, node->base.line, node->base.column, "Undefined type '%s'", node->return_type_annotation);
+    }
+
+    if (current_type)
+    {
+        // Método
+
+        char *full_name = function_table_build_method_name(current_type->name, node->name);
+
+        if (!function_table_insert(global_function_table, full_name, return_type, param_types))
+        {
+            dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, node->base.line, node->base.column, "Method '%s' is already defined in type '%s'", node->name, current_type->name);
+        }
+
+        free(full_name);
+
+        // Agregar el nombre del método a la lista del tipo
+        UserTypeDescriptor *utype = (UserTypeDescriptor *)current_type;
+        user_type_add_method(utype, node->name);
+    }
+    else
+    {
+        // Función
+        if (!function_table_insert(global_function_table, node->name, return_type, param_types))
+        {
+            dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, node->base.line, node->base.column, "Function '%s' is already defined", node->name);
+        }
+    }
 }
 
+static void register_type(TypeDefinitionNode *node)
+{
+    TypeDescriptor *object_type = type_table_lookup_by_tag(global_type_table, HULK_OBJECT);
+
+    // Resolver tipo padre
+    TypeDescriptor *parent_type = get_type_from_annotation(node->father_name);
+
+    if (!parent_type)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, node->base.line, node->base.column, "Undefined type '%s'", node->father_name);
+        parent_type = object_type;
+    }
+
+    else if (parent_type->tag != HULK_OBJECT && parent_type->tag != HULK_USER_DEFINED)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, node->base.line, node->base.column, "Cannot inherit from built-in type '%s'", parent_type->name);
+        parent_type = object_type;
+    }
+
+    // Construir tipos de parámetros de inicialización
+    List *param_types = build_param_types(node->init_params, dm_global);
+
+    // Crear el UserTypeDescriptor
+    UserTypeDescriptor *utype = user_type_create(node->name, parent_type, param_types);
+    if (!utype)
+        return;
+
+    // Insertar en la tabla global
+    if (!type_table_insert(global_type_table, utype))
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, node->base.line, node->base.column, "Type '%s' is already defined", node->name);
+        user_type_destroy(utype);
+        return;
+    }
+
+    // Registrar métodos del tipo
+    for (size_t i = 0; i < list_count(node->methods); i++)
+    {
+        FunctionDefinitionNode *method = (FunctionDefinitionNode *)list_get(node->methods, i);
+        register_function(method, (TypeDescriptor *)utype);
+    }
+}
+
+static List *resolve_unknown_params(List *current_params, List *resolved_types)
+{
+    List *new_params = list_create(0, NULL, NULL, NULL, NULL);
+    size_t resolved_idx = 0;
+
+    for (size_t j = 0; j < list_count(current_params); j++)
+    {
+        TypeDescriptor *current = (TypeDescriptor *)list_get(current_params, j);
+
+        if (current == NULL)
+        {
+            TypeDescriptor *resolved = (TypeDescriptor *)list_get(resolved_types, resolved_idx);
+            list_append(new_params, resolved);
+            resolved_idx++;
+        }
+
+        else
+        {
+            list_append(new_params, current);
+        }
+    }
+
+    return new_params;
+}
+
+static void infer_function(TypeInferenceVisitor *infer, FunctionDefinitionNode *func_def, TypeDescriptor *current_type)
+{
+    Visitor *visitor = (Visitor *)infer;
+
+    // Si es un método, establecer el nombre del método actual (para base())
+    if (current_type)
+        infer->current_method_name = func_def->name;
+
+    // Primera pasada de inferencia (con parámetros posiblemente NULL)
+    ast_accept((ASTNode *)func_def, visitor);
+
+    List *unannotated = get_unannotated_params(func_def->params);
+
+    // Si no hay parámetros sin anotar, no hay más que hacer
+    if (!unannotated || list_count(unannotated) == 0)
+    {
+        if (unannotated)
+            list_destroy(unannotated);
+
+        infer->current_method_name = NULL;
+        return;
+    }
+
+    // Recolectar restricciones sobre los parámetros sin anotar
+    ConstraintCollectorVisitor *collector = constraint_collector_create(infer->current_scope, unannotated);
+    ast_accept((ASTNode *)func_def, (Visitor *)collector);
+
+    // Resolver restricciones a tipos concretos
+    List *resolved_types = constraint_collector_resolve(collector);
+
+    if (!resolved_types)
+    {
+        constraint_collector_destroy(collector);
+        list_destroy(unannotated);
+
+        infer->current_method_name = NULL;
+        return;
+    }
+
+    // Construir lista actual de tipos de parámetros (con NULL para los sin anotar)
+    List *current_params = build_param_types(func_def->params, dm_global);
+
+    // Reemplazar los NULL con los tipos resueltos
+    List *new_params = resolve_unknown_params(current_params, resolved_types);
+
+    // Actualizar la tabla de funciones con los nuevos tipos
+    const char *func_name;
+    char *full_name = NULL;
+
+    if (current_type)
+    {
+        full_name = function_table_build_method_name(current_type->name, func_def->name);
+        func_name = full_name;
+    }
+    else
+    {
+        func_name = func_def->name;
+    }
+
+    function_table_update(global_function_table, func_name, NULL, new_params);
+
+    if (full_name)
+        free(full_name);
+
+    // Segunda pasada de inferencia con los tipos ya resueltos
+    ast_accept((ASTNode *)func_def, visitor);
+
+    // Limpiar método actual
+    infer->current_method_name = NULL;
+
+    // Limpieza
+    list_destroy(current_params);
+    list_destroy(resolved_types);
+    list_destroy(unannotated);
+
+    constraint_collector_destroy(collector);
+}
+
+static void infer_type(TypeInferenceVisitor *infer, TypeDefinitionNode *type_def)
+{
+    Visitor *visitor = (Visitor *)infer;
+    UserTypeDescriptor *utype = (UserTypeDescriptor *)type_table_lookup_by_name(global_type_table, type_def->name);
+
+    if (!utype)
+        return;
+
+    // Guardar y establecer el tipo actual para los métodos
+    TypeDescriptor *old_type = infer->current_type;
+    infer->current_type = (TypeDescriptor *)utype;
+
+    // Primera pasada de inferencia sobre el tipo
+    ast_accept((ASTNode *)type_def, visitor);
+
+    // Resolver init_params sin anotar
+    List *unannotated = get_unannotated_params(type_def->init_params);
+
+    if (unannotated && list_count(unannotated) > 0)
+    {
+        ConstraintCollectorVisitor *collector = constraint_collector_create(infer->current_scope, unannotated);
+        ast_accept((ASTNode *)type_def, (Visitor *)collector);
+
+        List *resolved_types = constraint_collector_resolve(collector);
+
+        if (resolved_types)
+        {
+            // Obtener los tipos actuales (con NULL) y reemplazar por los resueltos
+            List *current = user_type_get_param_types(utype);
+            List *new_params = resolve_unknown_params(current, resolved_types);
+
+            // Reemplazar la lista de parámetros en el tipo
+            list_destroy(current);
+            utype->param_types = new_params;
+
+            list_destroy(resolved_types);
+        }
+
+        constraint_collector_destroy(collector);
+
+        // Segunda pasada de inferencia con los nuevos tipos
+        ast_accept((ASTNode *)type_def, visitor);
+    }
+
+    if (unannotated)
+        list_destroy(unannotated);
+
+    // Inferir métodos del tipo
+    for (size_t m = 0; m < list_count(type_def->methods); m++)
+    {
+        FunctionDefinitionNode *method = (FunctionDefinitionNode *)list_get(type_def->methods, m);
+        infer_function(infer, method, (TypeDescriptor *)utype);
+    }
+
+    // Restaurar tipo anterior
+    infer->current_type = old_type;
+}
+
+
+static void *visit_program_node(Visitor *visitor, ASTNode *node)
+{
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    ProgramNode *program = (ProgramNode *)node;
+
+    // Registrar tipos
+    for (size_t i = 0; i < list_count(program->type_definitions); i++)
+    {
+        TypeDefinitionNode *type_def = (TypeDefinitionNode *)list_get(program->type_definitions, i);
+        register_type(type_def);
+    }
+
+    // Registrar funciones globales
+    for (size_t i = 0; i < list_count(program->function_definitions); i++)
+    {
+        FunctionDefinitionNode *func_def = (FunctionDefinitionNode *)list_get(program->function_definitions, i);
+        register_function(func_def, NULL);
+    }
+
+    // Inferir definiciones de tipos
+    for (size_t i = 0; i < list_count(program->type_definitions); i++)
+    {
+        TypeDefinitionNode *type_def = (TypeDefinitionNode *)list_get(program->type_definitions, i);
+        infer_type(infer, type_def);
+    }
+
+    // Inferir definiciones de funciones globales
+    for (size_t i = 0; i < list_count(program->function_definitions); i++)
+    {
+        FunctionDefinitionNode *func_def = (FunctionDefinitionNode *)list_get(program->function_definitions, i);
+        infer_function(infer, func_def, NULL);
+    }
+
+    // Inferir expresión principal
+    TypeDescriptor *root_type = ast_accept(program->root, visitor);
+    program->base.return_type = root_type;
+
+    return root_type;
+}
 
 TypeInferenceVisitor *type_inference_visitor_create(void)
 {

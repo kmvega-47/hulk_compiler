@@ -1,6 +1,7 @@
 #ifndef CONSTRAINT_COLLECTOR_VISITOR_H
 #define CONSTRAINT_COLLECTOR_VISITOR_H
 
+#include "scope.h"
 #include "visitor.h"
 #include "type_constraint.h"
 

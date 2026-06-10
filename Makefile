@@ -44,7 +44,8 @@ PROJECT_SRC = src/common/hulk_common.c \
               src/semantic/visitor/print_visitor/print_visitor.c \
               src/semantic/visitor/free_visitor/free_visitor.c \
               src/semantic/visitor/type_inference_visitor/type_inference_visitor.c \
-              src/semantic/visitor/constraint_collector_visitor/type_constraint.c
+              src/semantic/visitor/constraint_collector_visitor/type_constraint.c \
+              src/semantic/visitor/constraint_collector_visitor/constraint_collector_visitor.c
 
 # Fuentes de collections
 COLLECTIONS_SRC = lib/collections/src/common/common.c \

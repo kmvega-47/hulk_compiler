@@ -1,9 +1,9 @@
 #ifndef HULK_TYPE_INFERENCE_VISITOR_H
 #define HULK_TYPE_INFERENCE_VISITOR_H
 
-#include "visitor.h"
+#include "constraint_collector_visitor.h"
 #include "scope.h"
-
+#include "diagnostic_manager.h"
 /**
  * @brief Visitor para inferencia de tipos.
  *

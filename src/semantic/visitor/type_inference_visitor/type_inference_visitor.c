@@ -515,23 +515,84 @@ static void *visit_type_instanciation_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    BaseCallNode *base_call = (BaseCallNode *)node;
+
+    // Guardar el tipo y método actual en el nodo para uso en codegen
+    base_call->type_name = strdup(infer->current_type->name);
+    base_call->method_name = strdup(infer->current_method_name);
+
+    // Inferir los argumentos
+    for (size_t i = 0; i < list_count(base_call->args); i++)
+    {
+        ASTNode *arg = (ASTNode *)list_get(base_call->args, i);
+        ast_accept(arg, visitor);
+    }
+
+    // Buscar el ancestro que tenga el método
+    UserTypeDescriptor *user_type = type_to_user_defined(infer->current_type);
+    UserTypeDescriptor *ancestor = user_type_find_ancestor_with_method(user_type, infer->current_method_name);
+
+    if (!ancestor)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, base_call->base.line, base_call->base.column, "No ancestor of '%s' implements method '%s'", infer->current_type->name, infer->current_method_name);
+        base_call->base.return_type = NULL;
+        return NULL;
+    }
+
+    // Buscar el método en la tabla global con el nombre del ancestro
+    char *full_name = function_table_build_method_name(ancestor->base.name, infer->current_method_name);
+    TypeDescriptor *return_type = function_table_get_return_type(global_function_table, full_name);
+    
+    free(full_name);
+
+    if (!return_type)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, base_call->base.line, base_call->base.column, "Method '%s' not found in ancestor '%s'", infer->current_method_name, ancestor->base.name);
+    }
+
+    base_call->base.return_type = return_type;
+    return return_type;
 }
 
 static void *visit_is_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    IsNode *is_node = (IsNode *)node;
+
+    // Inferir el target
+    ast_accept(is_node->target, visitor);
+
+    // Buscar el tipo en la tabla
+    TypeDescriptor *type = type_table_lookup_by_name(global_type_table, is_node->type_name);
+    if (!type)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, is_node->base.line, is_node->base.column, "Undefined type '%s'", is_node->type_name);
+    }
+
+    // is siempre retorna Bool
+    is_node->base.return_type = type_table_lookup_by_tag(global_type_table, HULK_BOOL);
+    return is_node->base.return_type;
 }
 
 static void *visit_as_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    AsNode *as_node = (AsNode *)node;
+
+    // Inferir el target
+    ast_accept(as_node->target, visitor);
+
+    // Buscar el tipo en la tabla
+    TypeDescriptor *type = type_table_lookup_by_name(global_type_table, as_node->type_name);
+    if (!type)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, as_node->base.line, as_node->base.column, "Undefined type '%s'", as_node->type_name);
+    }
+
+    // as retorna el tipo al que se convierte
+    as_node->base.return_type = type;
+    return type;
 }
 
 static void *visit_program_node(Visitor *visitor, ASTNode *node)

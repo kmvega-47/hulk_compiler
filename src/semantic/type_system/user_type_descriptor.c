@@ -84,6 +84,7 @@ TypeDescriptor *user_type_lookup_attribute(const UserTypeDescriptor *type, const
     for (size_t i = 0; i < list_count(type->attribute_names); i++)
     {
         char *attr_name = (char *)list_get(type->attribute_names, i);
+        
         if (attr_name && strcmp(attr_name, name) == 0)
             return (TypeDescriptor *)list_get(type->attribute_types, i);
     }
@@ -156,4 +157,24 @@ void user_type_add_method(UserTypeDescriptor *type, const char *name)
         return;
 
     list_append(type->method_names, name_copy);
+}
+
+UserTypeDescriptor *user_type_find_ancestor_with_method(const UserTypeDescriptor *type, const char *method_name)
+{
+    if (!type || !method_name)
+        return NULL;
+
+    TypeDescriptor *parent = type->base.parent;
+
+    while (parent)
+    {
+        UserTypeDescriptor *parent_user = type_to_user_defined(parent);
+
+        if (parent_user && user_type_has_method(parent_user, method_name))
+            return parent_user;
+
+        parent = parent->parent;
+    }
+
+    return NULL;
 }

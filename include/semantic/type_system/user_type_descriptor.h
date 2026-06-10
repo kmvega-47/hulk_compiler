@@ -135,4 +135,13 @@ bool user_type_has_method(const UserTypeDescriptor *type, const char *name);
  */
 void user_type_add_method(UserTypeDescriptor *type, const char *name);
 
+/**
+ * @brief Busca el ancestro más cercano que tenga un método con el nombre dado.
+ *
+ * @param type        Tipo desde donde iniciar la búsqueda (se excluye a sí mismo).
+ * @param method_name Nombre del método a buscar.
+ * @return UserTypeDescriptor del ancestro que tiene el método, o NULL si no se encuentra.
+ */
+UserTypeDescriptor *user_type_find_ancestor_with_method(const UserTypeDescriptor *type, const char *method_name);
+
 #endif

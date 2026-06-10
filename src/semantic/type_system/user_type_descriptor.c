@@ -104,6 +104,26 @@ void user_type_add_attribute(UserTypeDescriptor *type, const char *name, TypeDes
     list_append(type->attribute_types, attr_type);
 }
 
+void user_type_update_attribute(UserTypeDescriptor *type, const char *name, TypeDescriptor *attr_type)
+{
+    if (!type || !name)
+        return;
+
+    for (size_t i = 0; i < list_count(type->attribute_names); i++)
+    {
+        char *attr_name = (char *)list_get(type->attribute_names, i);
+        
+        if (strcmp(attr_name, name) == 0)
+        {
+            list_set(type->attribute_types, i, attr_type);
+            return;
+        }
+    }
+
+    // No existe, agregarlo
+    user_type_add_attribute(type, name, attr_type);
+}
+
 bool user_type_has_method(const UserTypeDescriptor *type, const char *name)
 {
     if (!type || !name)

@@ -108,6 +108,17 @@ TypeDescriptor *user_type_lookup_attribute(const UserTypeDescriptor *type, const
 void user_type_add_attribute(UserTypeDescriptor *type, const char *name, TypeDescriptor *attr_type);
 
 /**
+ * @brief Actualiza el tipo de un atributo existente.
+ *
+ * Si el atributo no existe, lo agrega.
+ *
+ * @param type      Descriptor del tipo.
+ * @param name      Nombre del atributo.
+ * @param attr_type Nuevo tipo del atributo.
+ */
+void user_type_update_attribute(UserTypeDescriptor *type, const char *name, TypeDescriptor *attr_type);
+
+/**
  * @brief Verifica si un método existe en el tipo (busca en ancestros).
  *
  * @param type Descriptor del tipo.

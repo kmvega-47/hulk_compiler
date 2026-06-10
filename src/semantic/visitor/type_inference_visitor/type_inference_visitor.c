@@ -303,15 +303,14 @@ static void *visit_function_call_node(Visitor *visitor, ASTNode *node)
 
     if (!return_type)
     {
-        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC,
-            call->base.line, call->base.column,
-            "Function '%s' is not defined", call->name);
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, call->base.line, call->base.column, "Function '%s' is not defined", call->name);
     }
 
     else
     {
         // Verificar cantidad de argumentos
         List *param_types = function_table_get_params_types(global_function_table, call->name);
+
         if (list_count(call->args) != list_count(param_types))
         {
             dm_add_error(dm_global, ERROR_TYPE_SEMANTIC,
@@ -325,9 +324,78 @@ static void *visit_function_call_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_type_definition_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    TypeDefinitionNode *type_def = (TypeDefinitionNode *)node;
+
+    // El tipo ya debe estar registrado en la tabla global (se hizo al visitar el program)
+    TypeDescriptor *type = type_table_lookup_by_name(global_type_table, type_def->name);
+    UserTypeDescriptor *user_type = type_to_user_defined(type);
+
+    // Scope para init_params y father_init_args
+    Scope *old_scope = infer->current_scope;
+    infer->current_scope = scope_create(old_scope);
+
+    // Registrar init_params: los tipos ya están en user_type->param_types
+    List *param_types = user_type_get_param_types(user_type);
+
+    for (size_t i = 0; i < list_count(type_def->init_params); i++)
+    {
+        SymbolBinding *b = (SymbolBinding *)list_get(type_def->init_params, i);
+        TypeDescriptor *ptype = (TypeDescriptor *)list_get(param_types, i);
+
+        b->return_type = ptype;
+        scope_add_parameter(infer->current_scope, b->name, ptype);
+    }
+
+    // Inferir father_init_args
+    for (size_t i = 0; i < list_count(type_def->father_init_args); i++)
+    {
+        ASTNode *arg = (ASTNode *)list_get(type_def->father_init_args, i);
+        ast_accept(arg, visitor);
+    }
+
+    // Inferir atributos y registrarlos en el tipo
+    for (size_t i = 0; i < list_count(type_def->attributes); i++)
+    {
+        SymbolBinding *b = (SymbolBinding *)list_get(type_def->attributes, i);
+
+        if (b->initializer)
+            ast_accept(b->initializer, visitor);
+
+        TypeDescriptor *attr_type = NULL;
+        if (b->type_name)
+        {
+            attr_type = type_table_lookup_by_name(global_type_table, b->type_name);
+
+            if (!attr_type)
+            {
+                dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, b->line, b->column, "Type '%s' for attribute '%s' is not defined", b->type_name, b->name);
+            }
+        }
+
+        else
+            attr_type = b->initializer->return_type;
+
+        // Guardar el tipo en el binding y registrar/actualizar en el tipo
+        b->return_type = attr_type;
+        user_type_update_attribute(user_type, b->name, attr_type);
+    }
+
+    // Destruir scope temporal
+    scope_destroy(infer->current_scope);
+    infer->current_scope = old_scope;
+
+    // Establecer el tipo actual para que los métodos sepan en qué tipo están
+    TypeDescriptor *old_type = infer->current_type;
+    infer->current_type = type;
+
+    // Los métodos se visitan externamente (desde program node)
+
+    // Restaurar tipo actual
+    infer->current_type = old_type;
+
+    type_def->base.return_type = type_table_lookup_by_tag(global_type_table, HULK_VOID);
+    return type_def->base.return_type;
 }
 
 static void *visit_attribute_access_node(Visitor *visitor, ASTNode *node)

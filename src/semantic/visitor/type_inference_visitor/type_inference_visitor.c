@@ -400,9 +400,35 @@ static void *visit_type_definition_node(Visitor *visitor, ASTNode *node)
 
 static void *visit_attribute_access_node(Visitor *visitor, ASTNode *node)
 {
-    (void)visitor;
-    (void)node;
-    return NULL;
+    TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
+    AttributeAccessNode *attr = (AttributeAccessNode *)node;
+
+    // Verificar que el target sea 'self' (atributos privados, solo acceso vía self)
+    if (attr->target->node_type != NODE_VARIABLE_REFERENCE || !scope_is_self_instance(infer->current_scope, ((VariableReferenceNode *)attr->target)->name))
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, attr->base.line, attr->base.column, "Attribute access is private. (only trough self referring to the type instance)");
+        attr->base.return_type = NULL;
+        return NULL;
+    }
+
+    // Inferir el target
+    ast_accept(attr->target, visitor);
+
+    // Obtener el tipo de 'self' desde el scope
+    VariableReferenceNode *var_ref = (VariableReferenceNode *)attr->target;
+    TypeDescriptor *self_type = scope_lookup(infer->current_scope, var_ref->name);
+
+    // Buscar el atributo en el tipo
+    UserTypeDescriptor *user_type = (UserTypeDescriptor *)self_type;
+    TypeDescriptor *attr_type = user_type_lookup_attribute(user_type, attr->attribute_name);
+
+    if (!attr_type)
+    {
+        dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, attr->base.line, attr->base.column, "Attribute '%s' is not defined in type '%s'", attr->attribute_name, user_type->base.name);
+    }
+
+    attr->base.return_type = attr_type;
+    return attr_type;
 }
 
 static void *visit_method_access_node(Visitor *visitor, ASTNode *node)

@@ -1,0 +1,13 @@
+type Math
+{
+    sum(a, b) => a + b;
+    max(a, b) => if (a > b) a else b;
+    abs(x) => if (x < 0) -x else x;
+}
+
+let m = new Math() in
+{
+    print(m.sum(3, 4));
+    print(m.max(10, 20));
+    print(m.abs(-15));
+}

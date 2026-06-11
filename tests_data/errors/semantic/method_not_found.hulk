@@ -1,0 +1,2 @@
+type A {}
+let a = new A() in a.foo();

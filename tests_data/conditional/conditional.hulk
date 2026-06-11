@@ -1,7 +1,0 @@
-{
-    if (true) 42;
-    if (true) 42 else 0;
-    if (1 < 2) -1 elif (1 > 2) 1 else 0;
-    if (!(1 > 2) & (3 <= 4)) 99;
-    if (true) { 1; 2; } else { 3; 4; };
-}

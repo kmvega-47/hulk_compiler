@@ -1,0 +1,21 @@
+type Logger
+{
+    messages = "";
+
+    log(msg)
+    {
+        messages := messages @ msg @ "\n";
+    }
+
+    print_all()
+    {
+        print(messages);
+    }
+}
+
+let logger = new Logger() in
+{
+    logger.log("First message");
+    logger.log("Second message");
+    logger.print_all();
+}

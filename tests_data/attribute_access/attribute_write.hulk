@@ -1,0 +1,15 @@
+type Mutable
+{
+    x = 0;
+
+    set_x(v) => self.x := v;
+    get_x() => self.x;
+}
+
+let m = new Mutable() in
+{
+    m.set_x(42);
+    print(m.get_x());
+    m.set_x(99);
+    print(m.get_x());
+}

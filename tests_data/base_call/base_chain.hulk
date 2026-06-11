@@ -1,0 +1,17 @@
+type A
+{
+    value() => 1;
+}
+
+type B inherits A
+{
+    value() => base() + 1;
+}
+
+type C inherits B
+{
+    value() => base() + 1;
+}
+
+let c = new C() in
+    print(c.value());

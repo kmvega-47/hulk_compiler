@@ -1,0 +1,23 @@
+type Builder
+{
+    value = 0;
+
+    add(x)
+    {
+        value := value + x;
+    }
+
+    multiply(x)
+    {
+        value := value * x;
+    }
+
+    get() => self.value;
+}
+
+let b = new Builder() in
+{
+    b.add(5);
+    b.multiply(3);
+    print(b.get());
+}

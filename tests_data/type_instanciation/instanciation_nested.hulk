@@ -1,0 +1,14 @@
+type Inner(value)
+{
+    value = value;
+    get() => self.value;
+}
+
+type Outer(inner_value)
+{
+    inner = new Inner(inner_value);
+    get_inner_value() => self.inner.get();
+}
+
+let o = new Outer(42) in
+    print(o.get_inner_value());

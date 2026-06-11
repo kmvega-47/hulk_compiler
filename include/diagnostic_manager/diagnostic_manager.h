@@ -72,4 +72,15 @@ size_t dm_error_count(const diagnostic_manager_t *dm);
  */
 void dm_print_errors(const diagnostic_manager_t *dm);
 
+/**
+ * @brief Obtiene el código de salida según la prioridad de errores acumulados.
+ *
+ * La prioridad es: LEXICAL (1) > SYNTACTIC (2) > SEMANTIC (3).
+ * Si no hay errores, retorna 0.
+ *
+ * @param dm Gestor de diagnósticos.
+ * @return Código de salida: 0 sin errores, 1 léxico, 2 sintáctico, 3 semántico.
+ */
+int dm_get_exit_code(const diagnostic_manager_t *dm);
+
 #endif

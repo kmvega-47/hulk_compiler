@@ -1,0 +1,8 @@
+{
+    print(42);
+    print(3.14159);
+    print("Hello World");
+    print("The message is \"Hello World\"");
+    print(true);
+    print(false);
+}

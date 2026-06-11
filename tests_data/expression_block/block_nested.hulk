@@ -1,0 +1,6 @@
+{
+    {
+        print("inner");
+    }
+    print("outer");
+}

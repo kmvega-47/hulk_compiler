@@ -1,0 +1,11 @@
+let a = 42 in
+    if (a % 2 == 0)
+    {
+        print(a);
+        print("Even");
+    }
+    else
+    {
+        print(a);
+        print("Odd");
+    }

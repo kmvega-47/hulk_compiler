@@ -1,0 +1,21 @@
+type Point(x, y)
+{
+    x = x;
+    y = y;
+
+    getX() => self.x;
+    getY() => self.y;
+}
+
+type PolarPoint(phi, rho) inherits Point(rho * sin(phi), rho * cos(phi))
+{
+    getRho() => sqrt(self.getX() ^ 2 + self.getY() ^ 2);
+    getPhi() => atan2(self.getY(), self.getX());
+}
+
+let pt = new PolarPoint(PI / 4, 5) in
+{
+    print(pt.getX());
+    print(pt.getY());
+    print(pt.getRho());
+}

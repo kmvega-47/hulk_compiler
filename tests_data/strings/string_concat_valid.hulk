@@ -1,0 +1,6 @@
+{
+    print("Hello " @ "World");
+    print("The meaning of life is " @ 42);
+    print("PI is approximately " @ 3.14159);
+    print(true @ " is a boolean");
+}

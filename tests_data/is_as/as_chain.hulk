@@ -1,0 +1,17 @@
+type Animal { kind() => "animal"; }
+type Mammal inherits Animal { kind() => "mammal"; }
+type Dog inherits Mammal { kind() => "dog"; }
+
+let a: Animal = new Dog() in
+{
+    if (a is Mammal)
+    {
+        let m: Mammal = a as Mammal;
+        print(m.kind());
+    };
+    if (a is Dog)
+    {
+        let d: Dog = a as Dog;
+        print(d.kind());
+    };
+}

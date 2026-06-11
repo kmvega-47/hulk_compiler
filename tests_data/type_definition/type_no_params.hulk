@@ -1,0 +1,18 @@
+type Counter
+{
+    value = 0;
+
+    increment()
+    {
+        value := value + 1;
+    }
+
+    get_value() => self.value;
+}
+
+let c = new Counter() in
+{
+    print(c.get_value());
+    c.increment();
+    print(c.get_value());
+}

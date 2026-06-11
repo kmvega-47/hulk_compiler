@@ -156,6 +156,54 @@ void test_dm_global(void)
     dm_global = NULL;
 }
 
+void test_dm_get_exit_code(void)
+{
+    printf("\n\n------------ Inicio test: dm_get_exit_code ------------\n");
+
+    diagnostic_manager_t *dm = dm_create();
+
+    printf("Caso: sin errores retorna 0\n");
+    CU_ASSERT_EQUAL(dm_get_exit_code(dm), 0);
+
+    printf("Caso: solo error semantico retorna 3\n");
+    dm_add_error(dm, ERROR_TYPE_SEMANTIC, 10, 5, "Semantic error");
+    CU_ASSERT_EQUAL(dm_get_exit_code(dm), 3);
+
+    dm_destroy(dm);
+    dm = dm_create();
+
+    printf("Caso: primer error lexico retorna 1\n");
+    dm_add_error(dm, ERROR_TYPE_LEXICAL, 1, 0, "Lexical error");
+    dm_add_error(dm, ERROR_TYPE_SEMANTIC, 10, 5, "Semantic error");
+    CU_ASSERT_EQUAL(dm_get_exit_code(dm), 1);
+
+    dm_destroy(dm);
+    dm = dm_create();
+
+    printf("Caso: primer error sintactico retorna 2\n");
+    dm_add_error(dm, ERROR_TYPE_SYNTACTIC, 5, 3, "Syntactic error");
+    dm_add_error(dm, ERROR_TYPE_SEMANTIC, 10, 5, "Semantic error");
+    dm_add_error(dm, ERROR_TYPE_LEXICAL, 15, 0, "Lexical error later");
+    CU_ASSERT_EQUAL(dm_get_exit_code(dm), 2);
+
+    dm_destroy(dm);
+    dm = dm_create();
+
+    printf("Caso: primer error semantico retorna 3\n");
+    dm_add_error(dm, ERROR_TYPE_SEMANTIC, 10, 5, "Semantic error");
+    CU_ASSERT_EQUAL(dm_get_exit_code(dm), 3);
+
+    dm_destroy(dm);
+}
+
+void test_dm_get_exit_code_null(void)
+{
+    printf("\n\n------------ Inicio test: dm_get_exit_code_null ------------\n");
+    printf("Caso: dm NULL retorna 0\n");
+
+    CU_ASSERT_EQUAL(dm_get_exit_code(NULL), 0);
+}
+
 int main(void)
 {
     if (CUE_SUCCESS != CU_initialize_registry())
@@ -180,6 +228,8 @@ int main(void)
     CU_add_test(suite, "test_dm_print_errors_empty", test_dm_print_errors_empty);
     CU_add_test(suite, "test_dm_print_errors_null", test_dm_print_errors_null);
     CU_add_test(suite, "test_dm_global", test_dm_global);
+    CU_add_test(suite, "test_dm_get_exit_code", test_dm_get_exit_code);
+    CU_add_test(suite, "test_dm_get_exit_code_null", test_dm_get_exit_code_null);
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();

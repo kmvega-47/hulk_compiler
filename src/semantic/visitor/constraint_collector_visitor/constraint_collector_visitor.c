@@ -598,7 +598,6 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
     // Si no tenemos type_name o method_name, no podemos resolver
     if (!base_call->type_name || !base_call->method_name)
     {
-        printf("No tipo o no metodo\n");
         return NULL;
     }
 
@@ -613,8 +612,6 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
     // Buscar el método en la tabla global con el nombre compuesto
     char *full_name = function_table_build_method_name(father_name, base_call->method_name);
     List *param_types = function_table_get_params_types(global_function_table, full_name);
-
-    printf("Nombre resuelto : %s\n" , full_name);
 
     free(full_name);
 
@@ -633,8 +630,7 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
             if (constraint_collector_get(collector, arg_ref->name))
             {
                 TypeDescriptor *ptype = (TypeDescriptor *)list_get(param_types, i);
-                printf("NULL param_type : %s\n", ptype == NULL ? "true" : "false");
-                
+                                
                 if(ptype)
                 {
                     TypeDescriptor *types[] = { ptype };
@@ -687,7 +683,7 @@ static void *visit_as_node(Visitor *visitor, ASTNode *node)
     return NULL;
 }
 
-static void* visit_program_node(Visitor* visitor, VariableReferenceNode* node)
+static void* visit_program_node(Visitor* visitor, ProgramNode* node)
 {
     (void)visitor;
     (void)node;

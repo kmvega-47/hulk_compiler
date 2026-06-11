@@ -1,0 +1,4 @@
+{
+    {}
+    print("after empty block");
+}

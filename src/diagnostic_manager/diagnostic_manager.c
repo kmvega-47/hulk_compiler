@@ -135,3 +135,19 @@ void dm_print_errors(const diagnostic_manager_t *dm)
         fprintf(stderr, "(%d,%d) %s: %s\n", err->line, err->column, error_type_to_string(err->type), err->message);
     }
 }
+
+int dm_get_exit_code(const diagnostic_manager_t *dm)
+{
+    if (!dm_has_errors(dm))
+        return 0;
+
+    hulk_error_t *first = (hulk_error_t *)list_get(dm->errors, 0);
+
+    if (first->type == ERROR_TYPE_LEXICAL)
+        return 1;
+
+    if (first->type == ERROR_TYPE_SYNTACTIC)
+        return 2;
+
+    return 3;
+}

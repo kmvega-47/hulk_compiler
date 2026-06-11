@@ -1,0 +1,18 @@
+type Calculator
+{
+    result = 0;
+
+    add(x) => self.result := self.result + x;
+    sub(x) => self.result := self.result - x;
+    mult(x) => self.result := self.result * x;
+    div(x) => self.result := self.result / x;
+    get() => self.result;
+}
+
+let calc = new Calculator() in
+{
+    calc.add(10);
+    calc.mult(2);
+    calc.sub(5);
+    print(calc.get());
+}

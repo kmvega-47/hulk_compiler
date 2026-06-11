@@ -1,0 +1,3 @@
+let x: Number = 42 in print(x);
+let s: String = "hello" in print(s);
+let b: Bool = true in print(b);

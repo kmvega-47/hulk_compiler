@@ -1,0 +1,14 @@
+type Person(name, age)
+{
+    name = name;
+    age = age;
+
+    get_name() => self.name;
+    get_age() => self.age;
+}
+
+let p = new Person("Alice", 30) in
+{
+    print(p.get_name());
+    print(p.get_age());
+}

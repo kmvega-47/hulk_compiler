@@ -1,0 +1,6 @@
+{
+    let x = {
+        print("computing");
+        42
+    } in print(x);
+}

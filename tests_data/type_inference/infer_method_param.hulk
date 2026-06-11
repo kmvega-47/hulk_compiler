@@ -1,0 +1,15 @@
+type Box
+{
+    value = 0;
+    set(v)
+    {
+        self.value := v;
+    }
+    get() => self.value;
+}
+
+let b = new Box() in
+{
+    b.set(42);
+    print(b.get());
+}

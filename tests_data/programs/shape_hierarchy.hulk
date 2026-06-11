@@ -1,0 +1,34 @@
+type Shape
+{
+    area() => 0;
+    describe() => "I am a shape";
+}
+
+type Circle(radius) inherits Shape
+{
+    radius = radius;
+    area() => PI * self.radius ^ 2;
+    describe() => "Circle with radius " @ self.radius;
+}
+
+type Rectangle(width, height) inherits Shape
+{
+    width = width;
+    height = height;
+    area() => self.width * self.height;
+    describe() =>
+        "Rectangle " @ self.width @ "x" @ self.height;
+}
+
+function print_shape_info(s)
+{
+    {
+        print(s.describe());
+        print(s.area());
+    }
+}
+
+{
+    print_shape_info(new Circle(5));
+    print_shape_info(new Rectangle(3, 4));
+}

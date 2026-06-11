@@ -524,8 +524,11 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
     BaseCallNode *base_call = (BaseCallNode *)node;
 
     // Guardar el tipo y método actual en el nodo para uso en codegen
-    base_call->type_name = strdup(infer->current_type->name);
-    base_call->method_name = strdup(infer->current_method_name);
+    if(!base_call->type_name)
+        base_call->type_name = strdup(infer->current_type->name);
+
+    if(!base_call->method_name)
+        base_call->method_name = strdup(infer->current_method_name);
 
     // Inferir los argumentos
     for (size_t i = 0; i < list_count(base_call->args); i++)

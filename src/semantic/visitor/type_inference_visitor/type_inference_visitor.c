@@ -573,11 +573,27 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
 
     TypeDescriptor *return_type = function_table_get_return_type(global_function_table, full_name, &found);
 
-    free(full_name);
-
     if (!found)
     {
         dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, base_call->base.line, base_call->base.column, "Method '%s' not found in ancestor '%s'", infer->current_method_name, ancestor->base.name);
+        free(full_name);
+        base_call->base.return_type = NULL;
+        return NULL;
+    }
+
+    // Verificar cantidad de argumentos
+    List *param_types = function_table_get_params_types(global_function_table, full_name);
+    free(full_name);
+
+    if (param_types)
+    {
+        size_t expected = list_count(param_types);
+        size_t given = list_count(base_call->args);
+
+        if (expected != given)
+        {
+            dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, base_call->base.line, base_call->base.column, "base call '%s' expects %zu argument(s), but got %zu", infer->current_method_name, expected, given);
+        }
     }
 
     base_call->base.return_type = return_type;

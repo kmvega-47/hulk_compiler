@@ -386,6 +386,7 @@ typedef struct BaseCallNode
     char *method_name;
     char *type_name;
     List *args;
+    bool setted;
 } BaseCallNode;
 
 /**

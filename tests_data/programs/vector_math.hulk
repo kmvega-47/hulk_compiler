@@ -3,14 +3,17 @@ type Vector2D(x, y)
     x = x;
     y = y;
 
-    add(other) =>
-        new Vector2D(self.x + other.x, self.y + other.y);
+    get_x() => self.x;
+    get_y() => self.y;
 
-    dot(other) => self.x * other.x + self.y * other.y;
+    add(other: Vector2D): Vector2D =>
+        new Vector2D(self.x + other.get_x(), self.y + other.get_y());
+
+    dot(other: Vector2D): Number => self.x * other.get_x() + self.y * other.get_y();
 
     length() => sqrt(self.dot(self));
 
-    normalize() =>
+    normalize(): Vector2D =>
     {
         let len = self.length() in
         new Vector2D(self.x / len, self.y / len);

@@ -1,4 +1,4 @@
-function f(x) =>
+function f(x)
 {
     print(x + 1);
     print(x @ "hello");

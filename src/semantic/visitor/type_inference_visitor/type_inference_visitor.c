@@ -523,12 +523,30 @@ static void *visit_base_call_node(Visitor *visitor, ASTNode *node)
     TypeInferenceVisitor *infer = (TypeInferenceVisitor *)visitor;
     BaseCallNode *base_call = (BaseCallNode *)node;
 
+    if (!infer->current_type || !infer->current_method_name)
+    {
+        if(!base_call->setted)
+        {
+            dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, base_call->base.line, base_call->base.column, "'base()' can only be used inside a method of a user-defined type");
+        }
+
+        base_call->setted = true;
+        base_call->base.return_type = NULL;
+        
+        return NULL;
+    }
+
     // Guardar el tipo y método actual en el nodo para uso en codegen
     if(!base_call->type_name)
         base_call->type_name = strdup(infer->current_type->name);
 
     if(!base_call->method_name)
         base_call->method_name = strdup(infer->current_method_name);
+
+    if(base_call->type_name && base_call->method_name)
+    {
+        base_call->setted = true;
+    }
 
     // Inferir los argumentos
     for (size_t i = 0; i < list_count(base_call->args); i++)

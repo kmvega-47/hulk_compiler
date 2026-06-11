@@ -50,7 +50,7 @@ static void *visit_unary_operation_node(Visitor *visitor, ASTNode *node)
     return NULL;
 }
 
-static void add_binary_op_constraint(ConstraintCollectorVisitor *collector, const char *param_name, HulkOperator op, bool is_left, TypeDescriptor *other_type, int line)
+static void add_binary_op_constraint(ConstraintCollectorVisitor *collector, const char *param_name, HulkOperator op, bool is_left, int line)
 {
     TypeDescriptor *number_type = type_table_lookup_by_tag(global_type_table, HULK_NUMBER);
     TypeDescriptor *string_type = type_table_lookup_by_tag(global_type_table, HULK_STRING);
@@ -59,32 +59,10 @@ static void add_binary_op_constraint(ConstraintCollectorVisitor *collector, cons
     TypeDescriptor *types[2];
     size_t types_count = 0;
 
-    if (is_arithmetic_operator(op))
+    if (is_arithmetic_operator(op) || is_comparison_operator(op))
     {
         types[0] = number_type;
         types_count = 1;
-    }
-
-    else if (is_comparison_operator(op))
-    {
-        if (other_type == number_type)
-        {
-            types[0] = number_type;
-            types_count = 1;
-        }
-
-        else if (other_type == string_type)
-        {
-            types[0] = string_type;
-            types_count = 1;
-        }
-
-        else
-        {
-            types[0] = number_type;
-            types[1] = string_type;
-            types_count = 2;
-        }
     }
 
     else if (is_logical_operator(op))
@@ -95,6 +73,7 @@ static void add_binary_op_constraint(ConstraintCollectorVisitor *collector, cons
 
     else if (is_string_operator(op))
     {
+
         if (is_left)
         {
             types[0] = string_type;
@@ -116,7 +95,7 @@ static void add_binary_op_constraint(ConstraintCollectorVisitor *collector, cons
     constraint_collector_add(collector, c);
 }
 
-static void check_binary_operand(ConstraintCollectorVisitor *collector, ASTNode *operand, TypeDescriptor *other_type, HulkOperator op, bool is_left, int line)
+static void check_binary_operand(ConstraintCollectorVisitor *collector, ASTNode *operand, HulkOperator op, bool is_left, int line)
 {
     if (!operand || operand->node_type != NODE_VARIABLE_REFERENCE)
         return;
@@ -124,7 +103,7 @@ static void check_binary_operand(ConstraintCollectorVisitor *collector, ASTNode 
     VariableReferenceNode *var_ref = (VariableReferenceNode *)operand;
 
     if (constraint_collector_get(collector, var_ref->name))
-        add_binary_op_constraint(collector, var_ref->name, op, is_left, other_type, line);
+        add_binary_op_constraint(collector, var_ref->name, op, is_left, line);
 }
 
 static void *visit_binary_operation_node(Visitor *visitor, ASTNode *node)
@@ -135,8 +114,8 @@ static void *visit_binary_operation_node(Visitor *visitor, ASTNode *node)
     ast_accept(bin->left, visitor);
     ast_accept(bin->right, visitor);
 
-    check_binary_operand(collector, bin->left, bin->right->return_type, bin->operator, true, bin->base.line);
-    check_binary_operand(collector, bin->right, bin->left->return_type, bin->operator, false, bin->base.line);
+    check_binary_operand(collector, bin->left, bin->operator, true, bin->base.line);
+    check_binary_operand(collector, bin->right, bin->operator, false, bin->base.line);
 
     return NULL;
 }

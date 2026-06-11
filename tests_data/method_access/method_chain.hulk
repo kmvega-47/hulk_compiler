@@ -4,12 +4,12 @@ type Builder
 
     add(x)
     {
-        value := value + x;
+        self.value := self.value + x;
     }
 
     multiply(x)
     {
-        value := value * x;
+        self.value := self.value * x;
     }
 
     get() => self.value;

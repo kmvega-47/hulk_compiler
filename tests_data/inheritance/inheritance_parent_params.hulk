@@ -13,6 +13,19 @@ type PolarPoint(phi, rho) inherits Point(rho * sin(phi), rho * cos(phi))
     getPhi() => atan2(self.getY(), self.getX());
 }
 
+function atan2(y, x) =>
+    if (x == 0)
+        if (y > 0)
+            PI / 2
+        elif (y < 0)
+            -PI / 2
+        else
+            0
+    elif (x > 0)
+        sin(y) / cos(y)
+    else
+        sin(y) / cos(y) + PI;
+
 let pt = new PolarPoint(PI / 4, 5) in
 {
     print(pt.getX());

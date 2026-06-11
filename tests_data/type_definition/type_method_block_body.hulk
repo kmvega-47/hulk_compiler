@@ -2,14 +2,14 @@ type Logger
 {
     messages = "";
 
-    log(msg)
+    log(msg: String)
     {
-        messages := messages @ msg @ "\n";
+        self.messages := self.messages @ msg @ "\n";
     }
 
     print_all()
     {
-        print(messages);
+        print(self.messages);
     }
 }
 

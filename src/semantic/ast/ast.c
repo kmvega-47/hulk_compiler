@@ -358,6 +358,7 @@ BaseCallNode *ast_base_call_create(List *args, int line, int column)
 
     node->method_name = NULL;
     node->type_name = NULL;
+    node->setted = false;
     node->args = args;
 
     return node;

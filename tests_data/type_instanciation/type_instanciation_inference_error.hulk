@@ -1,0 +1,9 @@
+type B(x) 
+{
+    x = x;
+}
+
+{
+    // undefined_type
+    let a = new UnknownType() in print(1);
+}

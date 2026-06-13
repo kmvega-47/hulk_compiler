@@ -1,0 +1,7 @@
+{
+    // call_undefined_function
+    print(unknown_func(42));
+
+    // call_param_count_mismatch
+    print(sqrt(4, 5));
+}

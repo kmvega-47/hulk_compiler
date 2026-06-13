@@ -1,8 +1,0 @@
-type A { value() => "A"; }
-type B inherits A { value() => "B"; }
-type C inherits A { value() => "C"; }
-
-let x: A = new B() in
-    if (x is B)
-        let y: B = x as B in
-            print(y.value());

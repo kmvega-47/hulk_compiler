@@ -1,0 +1,7 @@
+function ambiguous(x) => "_" @@ x;
+function conflicted(x) { x + 3; x @@ " world"; }
+
+{
+    print(ambiguous(42));
+    print(conflicted(5));
+}

@@ -1,0 +1,4 @@
+{
+    // as con tipo inexistente
+    let x: Object = new A() in print((x as UnknownType));
+}

@@ -1,2 +1,0 @@
-type MyNumber inherits Number {}
-let n = new MyNumber() in print(n);

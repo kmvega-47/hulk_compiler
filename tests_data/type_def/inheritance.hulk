@@ -1,0 +1,15 @@
+type A {
+    x = 1;
+}
+
+type B inherits A {
+    y = 2;
+}
+
+type C inherits B {
+    z = 3;
+}
+
+{
+    print("Inheritance defined");
+}

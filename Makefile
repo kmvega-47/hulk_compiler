@@ -1,6 +1,10 @@
 # Compilador y flags
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -g -D_POSIX_C_SOURCE=200809L
+CFLAGS = -Wall -Wextra -std=gnu11 -g $(LLVM_CFLAGS)
+
+# LLVM
+LLVM_CFLAGS = $(shell llvm-config --cflags)
+LLVM_LIBS   = $(shell llvm-config --ldflags --libs core executionengine)
 
 # Rutas de includes
 INCLUDES = -Iinclude/common \
@@ -9,7 +13,6 @@ INCLUDES = -Iinclude/common \
            -Iinclude/parser \
            -Iinclude/semantic/type_system \
            -Iinclude/semantic/scope \
-           -Iinclude/semantic/symbol_binding \
            -Iinclude/semantic/ast \
            -Iinclude/semantic/visitor \
            -Iinclude/semantic/visitor/print_visitor \
@@ -17,6 +20,8 @@ INCLUDES = -Iinclude/common \
            -Iinclude/semantic/visitor/type_inference_visitor \
            -Iinclude/semantic/visitor/constraint_collector_visitor \
            -Iinclude/semantic/visitor/type_check_visitor \
+           -Iinclude/codegen/visitor \
+           -Iinclude/codegen/utils \
            -Ilib/collections/include \
            -Ilib/collections/include/common \
            -Ilib/collections/include/vector \
@@ -24,7 +29,7 @@ INCLUDES = -Iinclude/common \
            -Ibuild
 
 # Flags para CUnit y flex
-LIBS = -lcunit -lfl -lm
+LIBS = -lcunit -lfl -lm $(LLVM_LIBS)
 
 # Directorio de build
 BUILD_DIR = build
@@ -47,7 +52,9 @@ PROJECT_SRC = src/common/hulk_common.c \
               src/semantic/visitor/type_inference_visitor/type_inference_visitor.c \
               src/semantic/visitor/constraint_collector_visitor/type_constraint.c \
               src/semantic/visitor/constraint_collector_visitor/constraint_collector_visitor.c \
-              src/semantic/visitor/type_check_visitor/type_check_visitor.c
+              src/semantic/visitor/type_check_visitor/type_check_visitor.c \
+              src/codegen/visitor/codegen_visitor.c \
+              src/codegen/utils/codegen_utils.c
 
 # Fuentes de collections
 COLLECTIONS_SRC = lib/collections/src/common/common.c \

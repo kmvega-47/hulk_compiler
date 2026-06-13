@@ -1,1 +1,0 @@
-let x = $invalid in print(x);

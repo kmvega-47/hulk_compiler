@@ -1,0 +1,13 @@
+{
+    // not
+    print(!true);
+
+    // neg
+    print(-13);
+
+    // nested_not
+    print(!!!!true);
+
+    // nested_neg
+    print(----13);
+}

@@ -1,2 +1,0 @@
-function add(x: Number, y: Number): String => x + y;
-print(add(1, 2));

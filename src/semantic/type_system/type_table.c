@@ -1,5 +1,8 @@
 #include "type_table.h"
 
+// Contador global de id actual
+static int type_id_counter = 0;
+
 static int type_cmp_by_name(const void *a, const void *b)
 {
     const TypeDescriptor *type_a = (const TypeDescriptor *)a;
@@ -121,6 +124,8 @@ bool type_table_insert(TypeTable *table, UserTypeDescriptor *type)
     if (type_table_lookup_by_name(table, type->base.name) != NULL)
         return false;
 
+    // asignar id y actualizar
+    type->type_id = type_id_counter++;
     list_append(table->user_types, type);
     return true;
 }

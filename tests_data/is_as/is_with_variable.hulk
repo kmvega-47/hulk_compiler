@@ -1,9 +1,0 @@
-type A {}
-type B inherits A {}
-type C inherits A {}
-
-{
-    let a = new A() in print(a is A);
-    let b = new B() in print(b is A);
-    let c = new C() in print(c is B);
-}

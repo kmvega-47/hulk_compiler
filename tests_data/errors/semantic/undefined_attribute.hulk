@@ -1,8 +1,0 @@
-type Point
-{
-    x = 0;
-    getX() => self.x;
-    getY() => self.y;
-}
-
-let pt = new Point() in print(pt.getY());

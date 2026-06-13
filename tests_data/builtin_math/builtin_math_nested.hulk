@@ -1,4 +1,0 @@
-{
-    print(sin(2 * PI) ^ 2 + cos(3 * PI / log(4, 64)));
-    print(sqrt(sqrt(256)));
-}

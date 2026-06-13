@@ -1,0 +1,39 @@
+{
+    // condition_not_bool: condicion no booleana
+    if (42) print("error");
+
+    // single_error_at_single_branch: error en una rama
+    if (true) print(!"texto");
+
+    // multiple_error_at_single_branch: multiples errores en una rama
+    if (false) print("ok")
+    else {
+        print(5 + "a");
+        print(true * 3);
+    };
+
+    // multiple_errors_at_both_branches: errores en ambas ramas
+    if (3 < 5) {
+        print(1 / "a");
+    }
+    else {
+        print(!"texto");
+    };
+
+    // multiple_errors_if_elif_else: errores en varias ramas
+    if (false) print("ok")
+    elif (true) print("ok")
+    elif (3 > 1) print(true - 4)
+    else print(5 @ false);
+
+    // mixed_condition_and_branches: condicion no bool y errores en ramas
+    if ("hola") {
+        print(5 + "texto");
+    }
+    elif (true) {
+        print(!"texto");
+    };
+
+    // error_at_condition: error en la condicion
+    if (!42) print("error");
+}

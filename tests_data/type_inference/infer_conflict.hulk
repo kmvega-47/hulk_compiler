@@ -1,6 +1,0 @@
-function f(x)
-{
-    print(x + 1);
-    print(x @ "hello");
-}
-f(5);

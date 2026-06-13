@@ -1,0 +1,22 @@
+{
+    // literal_bool: true
+    print(true);
+
+    // literal_bool: false
+    print(false);
+
+    // literal_numerico: entero
+    print(42);
+
+    // literal_numerico: decimal
+    print(3.1416);
+
+    // literal_string: normal
+    print("Hello World");
+
+    // literal_string: con caracteres escapados
+    print("Linea1\nLinea2\tTabulado\"Comilla\"");
+
+    // literal_string: largo
+    print("Este es un string mas largo que contiene multiples palabras para probar que el manejo de cadenas funciona correctamente en HULK");
+}

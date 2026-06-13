@@ -1,0 +1,28 @@
+type A {
+    value() => 10;
+    sum(x) => x + 1;
+}
+
+type B inherits A {
+    value() => 20 + base();
+    sum(x) => base(x) + 1;
+}
+
+type C inherits B {
+    value() => 30 + base();
+}
+
+{
+    // base en metodo sobrescrito (hereda de padre directo)
+    let b = new B() in 
+    {
+        print(b.value());
+
+        // base con argumentos
+        print(b.sum(5));
+
+    };
+
+    // base en metodo sobrescrito (hereda de ancestro mas lejano)
+    let c = new C() in print(c.value());
+}

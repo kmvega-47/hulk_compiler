@@ -1,3 +1,0 @@
-function f(x) => x + 1;
-function g(x) => x @ "hello";
-print(f(g("test")));

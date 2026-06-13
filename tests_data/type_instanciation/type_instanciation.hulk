@@ -1,0 +1,38 @@
+type A {
+    x = 1;
+}
+
+type B(x) {
+    x = x;
+}
+
+type C inherits A {
+    y = 2;
+}
+
+type D(x) inherits A {
+    y = x;
+}
+
+type E(x, y, z) {
+    x = x;
+    y = y;
+    z = z;
+}
+
+{
+    // no_params
+    let a = new A() in print(1);
+
+    // params
+    let b = new B(10) in print(2);
+
+    // no_params_with_inheritance
+    let c = new C() in print(3);
+
+    // params_with_inheritance
+    let d = new D(20) in print(4);
+
+    // multiple_params
+    let e = new E(1, 2, 3) in print(5);
+}

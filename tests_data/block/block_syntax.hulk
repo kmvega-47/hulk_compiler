@@ -1,0 +1,23 @@
+{
+    // single_expr_without_semicolon
+    {
+        print(100)
+    };
+
+    // single_expr_with_semicolon
+    {
+        print(200);
+    };
+
+    // multiple_expr_last_with_semicolon
+    {
+        print(300);
+        print(301);
+    };
+
+    // multiple_expr_last_without_semicolon
+    {
+        print(400);
+        print(401)
+    }
+}

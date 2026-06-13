@@ -1,0 +1,24 @@
+{
+    // complex_condition: condicion compuesta
+    let x = 5 in
+    while (x > 0 & x < 10) {
+        print(x);
+        x := x - 1;
+    };
+
+    // single_body: cuerpo simple
+    let y = 3 in
+    while (y > 0)
+        print(y := y - 1);
+
+    // block_body: cuerpo con bloque
+    let a = 2 in
+    while (a > 0) {
+        print(a);
+        a := a - 1;
+    };
+
+    // false_condition: condicion falsa, no ejecuta
+    while (false)
+        print("no deberia imprimirse");
+}

@@ -1,0 +1,8 @@
+type Point 
+{
+    x = 0;
+    getX() => self.x;
+}
+
+let p = new Point() in
+    print(p.getX() + "texto");

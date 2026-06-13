@@ -1,8 +1,0 @@
-type Data(value)
-{
-    value = value;
-    get() => self.value;
-}
-
-let d = new Data(100) in
-    print(d.get());

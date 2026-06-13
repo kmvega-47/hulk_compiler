@@ -1,2 +1,0 @@
-let a = 42 in
-    print(if (a % 2 == 0) "Even" else "Odd");

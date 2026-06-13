@@ -1,0 +1,12 @@
+type A {
+    sum(x: Number): Number => x + 1;
+}
+
+type B inherits A {
+    sum(x: Number): Number => base(x) + 1;
+}
+
+{
+    // base con argumentos incorrectos (tipo)
+    let b = new B() in print(b.sum("hola"));
+}

@@ -1,0 +1,35 @@
+type Point {
+    x = 0;
+    y = 0;
+
+    getX() => self.x;
+    getY() => self.y;
+    
+    setX(val) 
+    {
+        self.x := val;
+        self.x
+    }
+    
+    setY(val) 
+    {
+        self.y := val;
+        self.y
+    }
+}
+
+{
+    let p = new Point() in {
+        // acceso normal
+        print(p.getX());
+        print(p.getY());
+
+        // reasignacion de atributos
+        print(p.setX(10));
+        print(p.setY(20));
+
+        // verificar que se guardaron
+        print(p.getX());
+        print(p.getY());
+    }
+}

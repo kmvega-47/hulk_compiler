@@ -1,0 +1,8 @@
+function is_even(x: Number): Bool => if (x == 0) true else is_odd(x - 1);
+function is_odd(x: Number): Bool => if (x == 0) false else is_even(x - 1);
+function bad_body(x: Number): Number => x + "hola";
+
+{
+    print(3 + is_odd(4));
+    print(bad_body(5));
+}

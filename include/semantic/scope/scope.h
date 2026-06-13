@@ -172,4 +172,17 @@ LLVMValueRef scope_get_alloca(Scope *scope, const char *name);
  */
 void scope_set_alloca(Scope *scope, const char *name, LLVMValueRef alloca);
 
+/**
+ * @brief Añade una variable al scope actual y le asigna su alloca LLVM.
+ *
+ * Solo asigna el alloca si scope_add_variable tuvo éxito.
+ *
+ * @param scope  Scope donde añadir.
+ * @param name   Nombre de la variable.
+ * @param type   Tipo de la variable.
+ * @param alloca LLVMValueRef del alloca.
+ * @return true si se insertó correctamente, false si ya existía o falló.
+ */
+bool scope_add_variable_with_alloca(Scope *scope, const char *name, TypeDescriptor *type, LLVMValueRef alloca);
+
 #endif

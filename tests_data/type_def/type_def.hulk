@@ -1,0 +1,35 @@
+type Empty {}
+
+type Point {
+    x = 0;
+    y = 0;
+    getX() => 10;
+    getY() => 20;
+}
+
+type Person {
+    name = "Unknown";
+    greet() => "Hello World";
+}
+
+type Point3D(x, y) {
+    x = x;
+    y = y;
+    z = 0;
+    getZ() => 30;
+    sum(x,y,z) => x + y + z;
+}
+
+type Animal {
+    sound = "...";
+    makeSound() => print("Animal sound");
+}
+
+type Dog inherits Animal {
+    sound = "Woof";
+    bark() => print("Bark!");
+}
+
+{
+    print("Types defined correctly");
+}

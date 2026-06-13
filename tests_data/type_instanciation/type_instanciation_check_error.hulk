@@ -1,0 +1,12 @@
+type B(x: Number) 
+{
+    x = x;
+}
+
+{
+    // param_type_mismatch
+    let b = new B("hola") in print(1);
+    let b = new B(1, 2) in print(2);
+}
+
+    

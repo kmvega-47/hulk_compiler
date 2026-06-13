@@ -1,0 +1,2 @@
+// division por cero (error en ejecucion)
+print(5 / 0);

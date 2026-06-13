@@ -1,1 +1,0 @@
-if (true) print("yes") else print("no") else print("what");

@@ -1,0 +1,13 @@
+{
+    // error semantico: not espera Bool
+    print(!2003);
+
+    // error semantico: neg espera Number
+    print(-"5");
+
+    // error semantico: nested not sobre Number
+    print(---true);
+
+    // multiples errores: - y ! sobre tipo incorrecto
+    print(-!47);
+}

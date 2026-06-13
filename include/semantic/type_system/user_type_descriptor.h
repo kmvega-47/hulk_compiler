@@ -36,6 +36,7 @@
 typedef struct UserTypeDescriptor
 {
     TypeDescriptor base;
+    int type_id;
     List *param_types;
     List *attribute_names;
     List *attribute_types;
@@ -148,5 +149,13 @@ void user_type_add_method(UserTypeDescriptor *type, const char *name);
  * @return UserTypeDescriptor que tiene el método, o NULL si no se encuentra.
  */
 UserTypeDescriptor *user_type_find_type_with_method(const UserTypeDescriptor *type, const char *method_name);
+
+/**
+ * @brief Recalcula el offset de los miembros del tipo una vez estan los atributos del padre.
+ *
+ * @param type Puntero al descriptor.
+ */
+void user_type_recalculate_offset(UserTypeDescriptor *user_type);
+
 
 #endif

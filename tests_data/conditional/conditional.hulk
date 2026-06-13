@@ -1,0 +1,57 @@
+{
+    // only_if: solo if
+    if (true) 
+        print("only_if");
+
+    // if_else: if con else
+    if (false) 
+        print("no") 
+    
+    else 
+        print("if_else");
+
+    // if_elif_else: if con elif y else
+
+    if (false) 
+        print("no")
+
+    elif (true) 
+        print("if_elif_else")
+
+    else print("no");
+
+    // if_elif: if con elif sin else
+    if (false) 
+        print("no")
+
+    elif (true) 
+        print("if_elif");
+
+    // multiple_elif: varios elif
+    if (false) 
+        print("no")
+
+    elif (false) 
+        print("no")
+
+    elif (true) 
+        print("multiple_elif")
+        
+    else print("no");
+
+    // different_branch_types: ramas con distinto tipo
+    print(if (true) "zero" else 0);
+
+    // nested: condicionales anidados
+    if (true) 
+    {
+        if (false) 
+            print("no")
+
+        else print("nested");
+    };
+
+    // complex_condition: condicion compleja
+    if (3 < 5 & 2 + 2 == 4) 
+        print("complex_condition");
+}

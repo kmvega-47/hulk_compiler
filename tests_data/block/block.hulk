@@ -1,0 +1,26 @@
+{
+    // empty: bloque vacio
+    {};
+
+    // single_expression: una sola expresion
+    {
+        print(1);
+    };
+
+    // multiple_expressions: varias expresiones
+    {
+        print(2);
+        print(3);
+        print(4);
+    };
+
+    // nested: bloques anidados
+    {
+        print(5);
+        {
+            print(6);
+            print(7);
+        };
+        print(8);
+    }
+}

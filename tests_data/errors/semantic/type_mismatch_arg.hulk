@@ -1,2 +1,0 @@
-function square(x: Number): Number => x * x;
-print(square("hello"));

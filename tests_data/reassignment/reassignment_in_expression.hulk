@@ -1,6 +1,0 @@
-let a = 0 in
-    let b = a := 1 in
-    {
-        print(a);
-        print(b);
-    };

@@ -1,0 +1,30 @@
+type Point {
+    x = 0;
+    getX() => 10;
+    getY() => 20;
+    sum(a, b) => a + b;
+    callOther() => self.getX() + 30;
+}
+
+type Point3D inherits Point {
+    getX() => 50;
+    getZ() => 100;
+}
+
+{
+    let p = new Point() in {
+        // metodo sin parametros
+        print(p.getX());
+        // metodo con parametros
+        print(p.sum(3, 7));
+        // metodo que llama a otro metodo del mismo tipo
+        print(p.callOther());
+    };
+
+    let p3d = new Point3D() in {
+        // metodo heredado (getY no esta en Point3D, lo hereda de Point)
+        print(p3d.getY());
+        // metodo sobrescrito
+        print(p3d.getX());
+    }
+}

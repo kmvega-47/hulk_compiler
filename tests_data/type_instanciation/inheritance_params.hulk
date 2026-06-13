@@ -1,0 +1,12 @@
+type Point(x, y) {
+    x = x;
+    y = y;
+}
+
+type PolarPoint inherits Point {
+    rho() => 10;
+}
+
+{
+    let p = new PolarPoint(3, 4) in print(1);
+}

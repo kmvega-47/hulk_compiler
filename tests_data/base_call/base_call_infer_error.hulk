@@ -1,0 +1,4 @@
+{
+    // base fuera de un metodo
+    print(base());
+}

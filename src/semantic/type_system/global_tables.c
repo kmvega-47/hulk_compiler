@@ -13,8 +13,11 @@ static void register_builtin_functions(void)
 {
     TypeDescriptor *void_type = type_table_lookup_by_tag(global_type_table, HULK_VOID);
     TypeDescriptor *num_type  = type_table_lookup_by_tag(global_type_table, HULK_NUMBER);
+    TypeDescriptor *str_type  = type_table_lookup_by_tag(global_type_table, HULK_STRING);
+    TypeDescriptor *bool_type = type_table_lookup_by_tag(global_type_table, HULK_BOOL);
     TypeDescriptor *obj_type  = type_table_lookup_by_tag(global_type_table, HULK_OBJECT);
 
+    // Builtins de HULK
     register_builtin_unary("print", void_type, obj_type);
     register_builtin_unary("sqrt", num_type, num_type);
     register_builtin_unary("sin", num_type, num_type);
@@ -26,6 +29,24 @@ static void register_builtin_functions(void)
 
     List *rand_params = list_create(0, NULL, NULL, NULL, NULL);
     function_table_insert(global_function_table, "rand", num_type, rand_params);
+
+    // Internas del codegen
+    register_builtin_unary("_print_number", void_type, num_type);
+    register_builtin_unary("_print_string", void_type, str_type);
+    register_builtin_unary("_print_bool", void_type, bool_type);
+    register_builtin_unary("_number_to_string", str_type, num_type);
+
+    List *pow_params = list_create(2, (void *[]){num_type, num_type}, NULL, NULL, NULL);
+    function_table_insert(global_function_table, "_pow", num_type, pow_params);
+
+    List *concat_params = list_create(3, (void *[]){str_type, str_type, num_type}, NULL, NULL, NULL);
+    function_table_insert(global_function_table, "_concat", str_type, concat_params);
+
+    List *alloc_params = list_create(1, (void *[]){num_type}, NULL, NULL, NULL);
+    function_table_insert(global_function_table, "_hulk_alloc", obj_type, alloc_params);
+
+    List *free_params = list_create(1, (void *[]){obj_type}, NULL, NULL, NULL);
+    function_table_insert(global_function_table, "_hulk_free", void_type, free_params);
 }
 
 void global_tables_init(void)

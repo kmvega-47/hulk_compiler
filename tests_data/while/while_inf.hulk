@@ -1,0 +1,8 @@
+{
+    // bucle infinito (presionar Ctrl+C para detener)
+    let x = 1 in
+    while (x > 0) {
+        print(x);
+        x := x + 1;
+    }
+}

@@ -13,6 +13,7 @@ UserTypeDescriptor *user_type_create(const char *name, TypeDescriptor *parent, L
     type->base.name = strdup(name);
     type->base.parent = parent ? parent : NULL;
 
+    type->type_id = -1 ; // se asignara al insertar en la tabla de tipos
     type->param_types = param_types;
 
     type->attribute_names = list_create(0, NULL, free, NULL, NULL);
@@ -23,18 +24,7 @@ UserTypeDescriptor *user_type_create(const char *name, TypeDescriptor *parent, L
     type->constructor = NULL;
     type->constructor_type = NULL;
 
-    if (parent)
-    {
-        UserTypeDescriptor *parent_user = type_to_user_defined(parent);
-        if (parent_user)
-            type->offset = parent_user->offset + (int)list_count(parent_user->attribute_names);
-        else
-            type->offset = 0;
-    }
-    else
-    {
-        type->offset = 0;
-    }
+    type->offset = 1;
 
     return type;
 }
@@ -188,4 +178,18 @@ UserTypeDescriptor *user_type_find_type_with_method(const UserTypeDescriptor *ty
     }
 
     return NULL;
+}
+
+void user_type_recalculate_offset(UserTypeDescriptor *user_type)
+{
+    if (!user_type)
+        return;
+
+    UserTypeDescriptor *parent_user = type_to_user_defined(user_type->base.parent);
+
+    if (parent_user)
+        user_type->offset = parent_user->offset + (int)list_count(parent_user->attribute_names);
+        
+    else
+        user_type->offset = 1;
 }

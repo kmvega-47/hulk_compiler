@@ -7,6 +7,7 @@
 #include "free_visitor.h"
 #include "type_inference_visitor.h"
 #include "type_check_visitor.h"
+#include "codegen_visitor.h"
 
 extern FILE *yyin;
 extern ASTNode *ast_root;
@@ -42,6 +43,7 @@ int main(int argc, char **argv)
 
     TypeInferenceVisitor *inference_visitor = type_inference_visitor_create();
     TypeCheckVisitor *check_visitor = type_check_visitor_create();
+    CodeGenVisitor *codegen_visitor = code_gen_visitor_create("hulk_module");
     PrintVisitor *pv = print_visitor_create();
     FreeVisitor *fv = free_visitor_create();
 
@@ -56,7 +58,15 @@ int main(int argc, char **argv)
         ast_accept(ast_root, (Visitor *)inference_visitor);
 
         if (!dm_has_errors(dm_global))
+        {
             ast_accept(ast_root, (Visitor *)check_visitor);
+
+            if (!dm_has_errors(dm_global))
+            {
+                ast_accept(ast_root, (Visitor *)codegen_visitor);
+                code_gen_visitor_compile(codegen_visitor, "output");
+            }
+        }
     }
 
     dm_print_errors(dm_global);
@@ -72,6 +82,7 @@ int main(int argc, char **argv)
 
     free_visitor_destroy(fv);
     print_visitor_destroy(pv);
+    code_gen_visitor_destroy(codegen_visitor);
     type_check_visitor_destroy(check_visitor);
     type_inference_visitor_destroy(inference_visitor);
 

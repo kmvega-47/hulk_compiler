@@ -1,0 +1,7 @@
+type A {}
+type B {}
+
+{
+    // as a tipo no compatible
+    let x: Object = new A() in print(x as B);
+}

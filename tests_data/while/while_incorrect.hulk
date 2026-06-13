@@ -1,0 +1,18 @@
+{
+    // condition_not_bool: condicion no booleana
+    while (42)
+        print("error");
+
+    // error_at_condition: error en la condicion
+    while (!"texto")
+        print("error");
+
+    // error_at_body: error en el cuerpo
+    while (true)
+        print(5 + "a");
+
+    // mixed_errors: condicion no bool y error en cuerpo
+    while (3.14) {
+        print(true / 4);
+    }
+}

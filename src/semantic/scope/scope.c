@@ -232,3 +232,12 @@ void scope_set_alloca(Scope *scope, const char *name, LLVMValueRef alloca)
     if (entry)
         entry->alloca = alloca;
 }
+
+bool scope_add_variable_with_alloca(Scope *scope, const char *name, TypeDescriptor *type, LLVMValueRef alloca)
+{
+    if (!scope_add_variable(scope, name, type))
+        return false;
+
+    scope_set_alloca(scope, name, alloca);
+    return true;
+}

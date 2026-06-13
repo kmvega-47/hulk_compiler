@@ -839,6 +839,9 @@ static void infer_type(TypeInferenceVisitor *infer, TypeDefinitionNode *type_def
     TypeDescriptor *old_type = infer->current_type;
     infer->current_type = (TypeDescriptor *)utype;
 
+    // Recalcular offset
+    user_type_recalculate_offset(utype);
+
     // Primera pasada de inferencia sobre el tipo
     ast_accept((ASTNode *)type_def, visitor);
 

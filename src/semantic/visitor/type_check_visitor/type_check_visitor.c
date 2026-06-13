@@ -164,9 +164,6 @@ static void *visit_while_loop_node(Visitor *visitor, ASTNode *node)
 
     ast_accept(loop->condition, visitor);
 
-    if (loop->body)
-        ast_accept(loop->body, visitor);
-
     TypeDescriptor *cond_type = loop->condition->return_type;
     TypeDescriptor *bool_type = type_table_lookup_by_tag(global_type_table, HULK_BOOL);
 
@@ -174,6 +171,9 @@ static void *visit_while_loop_node(Visitor *visitor, ASTNode *node)
     {
         dm_add_error(dm_global, ERROR_TYPE_SEMANTIC, loop->base.line, loop->base.column, "While loop condition expected Bool, but got '%s'", cond_type->name);
     }
+
+    if (loop->body)
+        ast_accept(loop->body, visitor);
 
     return NULL;
 }
@@ -253,8 +253,6 @@ static void *visit_function_definition_node(Visitor *visitor, ASTNode *node)
     if (func->return_type_annotation && body_type)
     {
         TypeDescriptor *annotated = type_table_lookup_by_name(global_type_table, func->return_type_annotation);
-
-        printf("DEBUG: body_type=%s, annotated=%s, conforms=%d\n", body_type->name, annotated->name, type_conforms_to(body_type, annotated));
 
         if (annotated && !type_conforms_to(body_type, annotated))
         {

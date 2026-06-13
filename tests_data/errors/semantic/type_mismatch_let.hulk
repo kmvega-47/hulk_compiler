@@ -1,1 +1,0 @@
-let x: Number = "hello" in print(x);

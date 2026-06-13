@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 
     if (ast_root)
     {
-        ast_accept(ast_root, (Visitor *)pv);
+        //ast_accept(ast_root, (Visitor *)pv);
         ast_accept(ast_root, (Visitor *)fv);
         ast_root = NULL;
     }

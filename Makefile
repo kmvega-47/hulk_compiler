@@ -91,37 +91,38 @@ all: build
 build: hulk
 
 hulk: $(ALL_OBJS)
-	$(CC) $(CFLAGS) $(ALL_OBJS) -o hulk $(LIBS)
+	@$(CC) $(CFLAGS) $(ALL_OBJS) -o hulk $(LIBS)
+	@echo "✅ Build completado: ./hulk"
 
 # Lexer
 $(LEXER_C): $(LEXER_SRC)
 	@mkdir -p $(BUILD_DIR)
-	flex -o $@ $<
+	@flex -o $@ $<
 
 # Parser
 $(PARSER_C) $(PARSER_H): $(PARSER_SRC)
 	@mkdir -p $(BUILD_DIR)
-	bison -d -o $(PARSER_C) $<
+	@bison -d -o $(PARSER_C) $<
 
 # Objeto del lexer
 $(LEXER_OBJ): $(LEXER_C) $(PARSER_H)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Objeto del parser
 $(PARSER_OBJ): $(PARSER_C) $(PARSER_H)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Objeto de main
 $(MAIN_OBJ): $(MAIN_SRC) $(PARSER_H)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Objetos del proyecto (dependen del header del parser)
 $(BUILD_DIR)/%.o: %.c $(PARSER_H)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Test
 test: $(TEST_OBJS)
@@ -129,23 +130,24 @@ test: $(TEST_OBJS)
 		echo "Uso: make test TEST=<ruta/al/test.c>"; \
 		exit 1; \
 	fi
-	$(CC) $(CFLAGS) $(INCLUDES) $(TEST) $(TEST_OBJS) -o test_runner $(LIBS)
-	./test_runner
-	rm -f test_runner
+	@$(CC) $(CFLAGS) $(INCLUDES) $(TEST) $(TEST_OBJS) -o test_runner $(LIBS)
+	@./test_runner
+	@rm -f test_runner
 
 test-memcheck: $(TEST_OBJS)
 	@if [ -z "$(TEST)" ]; then \
 		echo "Uso: make test-memcheck TEST=<ruta/al/test.c>"; \
 		exit 1; \
 	fi
-	$(CC) $(CFLAGS) $(INCLUDES) $(TEST) $(TEST_OBJS) -o test_runner $(LIBS)
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./test_runner
-	rm -f test_runner
+	@$(CC) $(CFLAGS) $(INCLUDES) $(TEST) $(TEST_OBJS) -o test_runner $(LIBS)
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./test_runner
+	@rm -f test_runner
 
 # Limpiar
 clean:
-	rm -rf $(BUILD_DIR)
-	rm -f test_runner
-	rm -f hulk
+	@rm -rf $(BUILD_DIR)
+	@rm -f test_runner
+	@rm -f hulk
+	@echo "🧹 Limpieza completada"
 
 .PHONY: all build test test-memcheck clean

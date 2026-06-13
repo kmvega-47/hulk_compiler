@@ -983,8 +983,8 @@ void code_gen_visitor_compile(CodeGenVisitor *visitor, const char *filename)
         return;
 
     // Imprimir IR generado (temporal, para depuración)
-    printf("\n=== LLVM IR ===\n");
-    LLVMDumpModule(visitor->module);
+    // printf("\n=== LLVM IR ===\n");
+    // LLVMDumpModule(visitor->module);
 
     if (!filename)
         return;

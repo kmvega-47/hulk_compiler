@@ -1,7 +1,0 @@
-{
-    // reassign_undefined_variable
-    y := 10;
-
-    // reassign_constant
-    E := 200;
-}

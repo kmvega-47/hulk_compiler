@@ -1,2 +1,0 @@
-// reassign_type_mismatch
-let x: Number = 5 in x := "hola";

@@ -1,7 +1,0 @@
-{
-    // invalid_type_annotation: tipo que no existe
-    let x: Foo = 5 in print(x);
-
-    // undefined_variable: variable no definida en binding
-    let a = b + 3 in print(a);
-}

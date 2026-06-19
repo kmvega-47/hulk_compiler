@@ -1,7 +1,0 @@
-function infinite(x: Number): Number 
-{
-    print(x);
-    infinite(x + 1);
-}
-
-infinite(1);

@@ -28,8 +28,8 @@ INCLUDES = -Iinclude/common \
            -Ilib/collections/include/list \
            -Ibuild
 
-# Flags para CUnit y flex
-LIBS = -lcunit -lfl -lm $(LLVM_LIBS)
+# Librerías (eliminamos -lcunit)
+LIBS = -lfl -lm $(LLVM_LIBS)
 
 # Directorio de build
 BUILD_DIR = build
@@ -81,9 +81,6 @@ MAIN_OBJ = $(BUILD_DIR)/src/main.o
 # Todos los objetos para el compilador
 ALL_OBJS = $(PROJECT_OBJ) $(COLLECTIONS_OBJ) $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_OBJ)
 
-# Objetos para tests (sin main)
-TEST_OBJS = $(PROJECT_OBJ) $(COLLECTIONS_OBJ)
-
 # --- Reglas ---
 
 all: build
@@ -124,30 +121,12 @@ $(BUILD_DIR)/%.o: %.c $(PARSER_H)
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Test
-test: $(TEST_OBJS)
-	@if [ -z "$(TEST)" ]; then \
-		echo "Uso: make test TEST=<ruta/al/test.c>"; \
-		exit 1; \
-	fi
-	@$(CC) $(CFLAGS) $(INCLUDES) $(TEST) $(TEST_OBJS) -o test_runner $(LIBS)
-	@./test_runner
-	@rm -f test_runner
-
-test-memcheck: $(TEST_OBJS)
-	@if [ -z "$(TEST)" ]; then \
-		echo "Uso: make test-memcheck TEST=<ruta/al/test.c>"; \
-		exit 1; \
-	fi
-	@$(CC) $(CFLAGS) $(INCLUDES) $(TEST) $(TEST_OBJS) -o test_runner $(LIBS)
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./test_runner
-	@rm -f test_runner
-
 # Limpiar
 clean:
 	@rm -rf $(BUILD_DIR)
 	@rm -f test_runner
 	@rm -f hulk
+	@rm -f output output.ll
 	@echo "🧹 Limpieza completada"
 
-.PHONY: all build test test-memcheck clean
+.PHONY: all build clean

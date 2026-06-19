@@ -1,0 +1,78 @@
+# Directorios de compilación y build
+build/
+bin/
+obj/
+out/
+
+# Archivos objeto y ejecutables
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+hulk
+hulk.exe
+
+# Archivos generados por flex y bison
+lex.yy.c
+parser.tab.c
+parser.tab.h
+*.tab.c
+*.tab.h
+*.yy.c
+*.output
+
+# Archivos de salida del compilador
+output
+output.ll
+*.ll
+*.bc
+*.s
+
+# Tests y datos de tests (como solicitaste)
+tests/
+tests_data/
+test_runner
+
+# Archivos de depuración y core dumps
+core
+core.*
+*.dSYM/
+*.pdb
+*.ilk
+*.exp
+
+# Archivos de editor
+*.swp
+*.swo
+*.bak
+*~
+.DS_Store
+.vscode/
+.idea/
+*.iml
+
+# Archivos de logs y temporales
+*.log
+*.tmp
+*.temp
+*.cache
+
+# Archivos de cobertura (si usas gcov)
+*.gcda
+*.gcno
+*.gcov
+
+# Archivos de backup
+*.orig
+*.rej
+*.patch
+*.diff
+
+# Archivos de configuración local (opcional)
+.env
+.env.local
+*.conf
